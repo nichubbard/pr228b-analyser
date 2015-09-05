@@ -4,7 +4,7 @@ void Spectra()
 
 void ExSi(TCut cut = "", TString name = "ExSi")
 {
-    DATA->Draw("SiliconEnergy:Ex>>h_"+name+"(800,4,16,1000,0,10000)", "CUTpid && SiliconTime-tof >= -400 && SiliconTime-tof <= 200" && cut, "col");
+    DATA->Draw("SiliconEnergy:Ex>>h_"+name+"(800,4,16,1000,0,10000)", "CUTpid && SiliconTime-tof >= -1000 && SiliconTime-tof <= 300" && cut, "col");
 }
 
 void SiliconTime()
