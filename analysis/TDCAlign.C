@@ -32,7 +32,7 @@
 #include <TH2.h>
 #include <TStyle.h>
 
-static const size_t channel_start = 912;
+static const size_t channel_start = 832;
 static const size_t channel_end = 1008;
 static const size_t channels = channel_end - channel_start;
 
