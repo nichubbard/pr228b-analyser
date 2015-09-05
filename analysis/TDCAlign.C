@@ -38,7 +38,7 @@ static const size_t channels = channel_end - channel_start;
 
 static const int h_bins = 1000;
 static const int h_start = -2000;
-static const int h_end = -1000;
+static const int h_end = 2000;
 
 TH1F* tdc[channels];
 
