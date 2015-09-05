@@ -1,3 +1,45 @@
+[/Analyzer/Parameters/ADC]
+Software Gain = INT[16] :
+[0] 0
+[1] 0
+[2] 0
+[3] 0
+[4] 0
+[5] 0
+[6] 0
+[7] 0
+[8] 0
+[9] 0
+[10] 0
+[11] 0
+[12] 0
+[13] 0
+[14] 0
+[15] 0
+Histogram Threshold = SHORT : 6
+adc_threshold = INT : 5
+
+[/Analyzer/Parameters/QDC]
+Software Gain = INT[16] :
+[0] 0
+[1] 0
+[2] 0
+[3] 0
+[4] 0
+[5] 0
+[6] 0
+[7] 0
+[8] 0
+[9] 0
+[10] 0
+[11] 0
+[12] 0
+[13] 0
+[14] 0
+[15] 0
+Histogram Threshold = SHORT : 6
+adc_threshold = INT : 5
+
 [/Analyzer/Parameters/focalplane]
 x1_driftt_low = INT : 6300
 x1_driftt_hi = INT : 8050
@@ -71,4 +113,146 @@ mtarget = FLOAT : 15.99492
 calpa = FLOAT : -1.5768e-05
 calpb = FLOAT : 0.126985
 calpc = FLOAT : 1119.45
+
+[/Analyzer/Parameters/GLOBAL]
+misswires = INT : 2
+max_tdc_channels = INT : 1000
+z_x1x2 = FLOAT : 285
+x_x1x2 = FLOAT : 515
+min_x_wires = INT : 3
+min_u_wires = INT : 3
+max_x_wires = INT : 9
+max_u_wires = INT : 8
+lut_x1_offset = INT : -70
+lut_u1_offset = INT : -70
+lut_x2_offset = INT : -60
+lut_u2_offset = INT : -50
+x1_1st_wire_chan = INT : 0
+x1_last_wire_chan = INT : 200
+x2_1st_wire_chan = INT : 500
+x2_last_wire_chan = INT : 700
+u1_1st_wire_chan = INT : 300
+u1_last_wire_chan = INT : 443
+u2_1st_wire_chan = INT : 800
+u2_last_wire_chan = INT : 943
+ADC Threshold = FLOAT : 5
+
+[/Analyzer/Output]
+Filename = STRING : [256] 
+RWNT = BOOL : n
+Histo Dump = BOOL : y
+Histo Dump Filename = STRING : [256] his%05d.root
+Clear histos = BOOL : y
+Last Histo Filename = STRING : [256] last.root
+Events to ODB = BOOL : y
+Global Memory Name = STRING : [8] ONLN
+
+[/Analyzer/Module switches]
+ADC = BOOL : y
+QDC = BOOL : y
+focalplane = BOOL : y
+Scalers = BOOL : y
+ADC calibration = BOOL : y
+Scaler accumulation = BOOL : y
+ADC summing = BOOL : y
+test space = BOOL : y
+Focal Plane = BOOL : y
+WireChamber = BOOL : y
+ADCcalibration = BOOL : y
+ADCsumming = BOOL : y
+Drift Chambers = BOOL : y
+SIMSORT = BOOL : y
+
+[/Analyzer/Trigger/Common]
+Event ID = INT : 1
+Trigger mask = INT : -1
+Sampling type = INT : 2
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] nic-fedora
+
+[/Analyzer/Trigger/Statistics]
+Events received = DOUBLE : 203541
+Events per sec. = DOUBLE : 9111.111111111111
+Events written = DOUBLE : 0
+
+[/Analyzer/Scaler/Common]
+Event ID = INT : 2
+Trigger mask = INT : -1
+Sampling type = INT : 1
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] nic-fedora
+
+[/Analyzer/Scaler/Statistics]
+Events received = DOUBLE : 641
+Events per sec. = DOUBLE : 111.1111111111111
+Events written = DOUBLE : 0
+
+[/Analyzer/Bank switches]
+QDC0 = DWORD : 1
+TDC0 = DWORD : 1
+SCLR = DWORD : 1
+ADC0 = DWORD : 1
+PAT0 = DWORD : 1
+ACUM = DWORD : 1
+CADC = DWORD : 1
+ASUM = DWORD : 1
+ETCR = DWORD : 0
+PADD = DWORD : 1
+TDC1 = DWORD : 1
+SCLD = DWORD : 1
+
+[/Analyzer]
+Book TTree = BOOL : n
+ODB Load = BOOL : n
+
+[/Analyzer/WireChamber/Common]
+Event ID = INT : 1
+Trigger mask = INT : -1
+Sampling type = INT : 2
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] k600daq
+
+[/Analyzer/WireChamber/Statistics]
+Events received = DOUBLE : 4366
+Events per sec. = DOUBLE : 49500
+Events written = DOUBLE : 0
+
+[/Analyzer/Tree switches/run]
+Read = BOOL : n
+Write = BOOL : n
+Fill = BOOL : n
+Save Config = BOOL : n
+Compression Level = INT : 0
+Max Entries = INT : 0
+
+[/Analyzer/Tasks/PrintValues]
+Active = BOOL : n
+TaskTestValue = INT : 0
+
+[/Analyzer/Tasks/GenerateRawSpectra]
+Active = BOOL : n
+
+[/Analyzer/Tasks/FillRawSpectra]
+Active = BOOL : n
+
+[/Analyzer/Global Steering Parameters]
+TestValue = INT : 0
+
+[/Analyzer/Tabs/Raw]
+Active = BOOL : n
+
+[/Analyzer/Tabs/Wires]
+Active = BOOL : n
+
+[/Analyzer/Tabs/Mon]
+Active = BOOL : n
+
+[/Analyzer/Tabs/WireHits]
+Active = BOOL : n
 
