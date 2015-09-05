@@ -39,10 +39,11 @@ bool SiliconData::TestEvent()
   {
 //     if(!((SiliconEnergy.at(i)>EnergyFront.at(i) && SiliconEnergy.at(i)<EnergyBack.at(i)) || (SiliconEnergy.at(i)<EnergyFront.at(i) && SiliconEnergy.at(i)>EnergyBack.at(i))))printf("SiliconEnergy doesn't fall between the front and back energies");
   //Check to see that the computed angle is reasonable and that nothing weird is going on - you need to add you own checks here as detector positions will change
-    if(SiliconTheta.at(i)<90){printf("SiliconTheta suggests a silicon detector at forward angles - problem in angle computation\n"); result = false;}
+    /*if(SiliconTheta.at(i)<90){printf("SiliconTheta suggests a silicon detector at forward angles - problem in angle computation\n"); result = false;}*/
   }
   
   if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
+  if(SiliconTime.size() != hits){printf("Mismatched size: SiliconTime"); result = false;}
   if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
   if(ADCChannelBack.size() != hits){printf("Mismatched size: ADCChannelBack\n"); result = false;}
   if(TDCChannelFront.size() != hits){printf("Mismatched size: TDCChannelFront\n"); result = false;}

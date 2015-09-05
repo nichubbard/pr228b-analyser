@@ -33,6 +33,7 @@ public :
   std::vector<double> SiliconTime;
   std::vector<double> SiliconTimeFront;
   std::vector<double> SiliconTimeBack;
+  std::vector<std::string> SiliconType;
   
   //Diagnostic values - these are things which might be useful to finding problems in the experiment or the sort code.
   std::vector<int> DetectorHit;
@@ -61,6 +62,7 @@ public :
   void SetTime(double tim)		{SiliconTime.push_back(tim);}
   void SetTimeFront(double tim)         {SiliconTimeFront.push_back(tim);}
   void SetTimeBack(double tim)          {SiliconTimeBack.push_back(tim);}
+  void SetSiliconType(std::string type) {SiliconType.push_back(type);}
   
   void SetDetectorHit(int det)		{DetectorHit.push_back(det);}
   void SetADCChannelFront(int chan)	{ADCChannelFront.push_back(chan);}

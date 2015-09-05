@@ -53,7 +53,6 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
 		    {
 		      double value = mTDC.GetValue(k);
 		      value -= TDCOffsets[mTDC.GetChannel(k)];
-		      if (value - t_tof < -2000 || value - t_tof > -1000) continue;
 		      for (int i = W1ADCChannelLimits[DetNum][0]; i <= W1ADCChannelLimits[DetNum][1]; i++)
 			{
 			  if (W1ADCTDCChannelTestPSide(i, tdcFront) && ADC_import[i] > ADCPedestals[i])
@@ -74,6 +73,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
 					  si->SetTheta(W1ThetaCalc(i,j));
 					  si->SetPhi(W1PhiCalc(i,j));
 					  si->SetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
+					  si->SetSiliconType("W1");
 					  
 					  si->SetEnergyFront(energyi);
 					  si->SetEnergyBack(energyj);

@@ -44,6 +44,7 @@
 #include "SiliconData.h"
 #include "MMM.h"
 #include "W1.h"
+#include "X1.h"
 
 #include "GammaData.h"
 #include "HagarSort.h"
@@ -65,6 +66,7 @@ extern float *QDC;
 #define _SILICONDATA 
 //#define _MMM
 #define _W1
+#define _X1
 //#define _GAMMADATA
 //#define _HAGAR
 
@@ -3296,6 +3298,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
     if(si)
     {
       si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+    }
+#endif
+
+#ifdef _X1
+    if(si)
+    {
+      X1SiliconSort(si, ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
