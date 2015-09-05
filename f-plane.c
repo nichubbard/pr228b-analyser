@@ -133,7 +133,7 @@ float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
 float lutu1[LUT_CHANNELS];
 float lutu2[LUT_CHANNELS];
-float cableOffset[896];
+float cableOffset[1024];
 char string_var[200];
 
 #ifdef _MISALIGNTIME
