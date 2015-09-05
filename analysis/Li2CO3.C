@@ -38,8 +38,8 @@
 
 using std::size_t;
 
-static const int tdc_gate_left = -300;
-static const int tdc_gate_right = 100;
+static const int tdc_gate_left = -400;
+static const int tdc_gate_right = 200;
 
 static const double x1_oxygen_left = 5.9;
 static const double x1_oxygen_right = 6.2;
