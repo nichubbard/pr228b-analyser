@@ -38,13 +38,13 @@
 
 using std::size_t;
 
-static const int tdc_gate_left = -400;
-static const int tdc_gate_right = 200;
+static const int tdc_gate_left = -2000;
+static const int tdc_gate_right = 0;
 
 static const double x1_oxygen_left = 5.9;
 static const double x1_oxygen_right = 6.2;
-static const double x1_background_l = 5.9;
-static const double x1_background_r = 6.2;
+static const double x1_background_l = 5.7;
+static const double x1_background_r = 6.4;
 
 void Li2CO3::Begin(TTree * /*tree*/)
 {
@@ -53,7 +53,7 @@ void Li2CO3::Begin(TTree * /*tree*/)
     // The tree argument is deprecated (on PROOF 0 is passed).
 
     TString option = GetOption();
-    TFile* cutfile = new TFile("CUTpidWeek2.root", "OLD");
+    TFile* cutfile = new TFile("CUTpid1098.root", "OLD");
     CUTpid = (TCutG*)cutfile->Get("CUTpid");
 
     if (fInput)
