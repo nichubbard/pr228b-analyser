@@ -22,6 +22,7 @@ int **MMMADCChannelLimits;
 int **MMMTDCChannelLimits;
 
 int NumberOfW1;
+int W1Start = 0;
 
 int **W1ADCChannelLimits;
 int **W1TDCChannelLimits;
@@ -155,9 +156,10 @@ void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there
 
 void W1NumberInit()
 {
-  W1ADCChannelLimits = new int*[NumberOfW1];
   if (NumberOfW1 > 0)
     printf("Using %d W1s\n", NumberOfW1);
+  W1ADCChannelLimits = new int*[NumberOfW1];
+  NumberOfW1 += W1Start - 1;
 
   for(int i=0;i<NumberOfW1;i++)
   {
@@ -189,7 +191,11 @@ void W1NumberInit()
 
 void W1ADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
-  if(det<=NumberOfW1)
+  if(det<W1Start)
+  {
+    printf("ADC: Detector number is higher than W1 start - skipping enabling this detector\n");
+  }
+  else if(det<=NumberOfW1)
   {
     if(side.compare(0,5,"pside")==0)
     {
@@ -603,6 +609,11 @@ void ReadConfiguration()
 	  NumberOfMMM = atoi(LineBuffer.c_str());
 	  MMMNumberInit();
 	}
+	else if(LineBuffer.compare(0,7,"W1Start") == 0)
+	{
+	  input >> LineBuffer;
+	  W1Start = atoi(LineBuffer.c_str());
+	}
 	else if(LineBuffer.compare(0,10,"NumberOfW1") == 0)
 	{
 	  input >> LineBuffer;
@@ -757,18 +768,18 @@ void ReadConfiguration()
 	  if(LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
 	  else if(LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
 	  else TestInelastic = true;
-	  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
+	  if(TestInelastic)printf(" Reaction is inelastic scattering\n");
 	}
 	else if(LineBuffer.compare(0,5,"mass1") == 0)
 	{
 	  input >> LineBuffer;
-	  printf("mass1: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+	  printf(" Beam  :  %f MeV/c**2\n",atof(LineBuffer.c_str()));
 	  masses[0] = atof(LineBuffer.c_str());//Be careful... the index number is different to the particle number...
 	}
 	else if(LineBuffer.compare(0,5,"mass2") == 0)
 	{
 	  input >> LineBuffer;
-	  printf("mass2: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+	  printf(" Target: %f MeV/c**2\n",atof(LineBuffer.c_str()));
 	  masses[1] = atof(LineBuffer.c_str());
 	}
 	else if(LineBuffer.compare(0,5,"mass3") == 0)
@@ -786,13 +797,14 @@ void ReadConfiguration()
 	else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
 	{
 	  input >> LineBuffer;
-	  printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
+	  printf("Excitation energy settings:\n");
+	  printf(" Beam energy: %f MeV\n",atof(LineBuffer.c_str()));
 	  T1 = atof(LineBuffer.c_str());
 	}
 	else if(LineBuffer.compare(0,15,"ScatteringAngle") == 0)
 	{
 	  input >> LineBuffer;
-	  printf("Scattering Angle: %f degrees\n",atof(LineBuffer.c_str()));
+	  printf(" Scattering angle: %.0f degrees\n",atof(LineBuffer.c_str()));
 	  theta3 = atof(LineBuffer.c_str());
 	}
 	else if(LineBuffer.compare(0,19,"RigidityCalibration") == 0)
