@@ -35,7 +35,12 @@ class GammaData
   //It's a STRING... i.e., type what you want in there and then test for that later on
 
   //There should follow some diagnostic values which will be added for The Greater Good (The Greater Good).
+  std::vector<int> GammaADCChannel;
+  std::vector<int> GammaADCValue;
+  std::vector<int> GammaTDCChannel;
+  std::vector<int> GammaTDCValue;
 
+public:
   void SetHits(int hits){GammaHits = hits;}
 
   void SetEnergy(double ener){GammaEnergy.push_back(ener);}
@@ -43,6 +48,11 @@ class GammaData
   void SetPhi(double ph){GammaPhi.push_back(ph);}
   void SetTime(double tim){GammaTime.push_back(tim);}
   void SetDetectorType(std::string type){GammaDetectorType.push_back(type);}
+
+  void SetADCChannel(int channel) { GammaADCChannel.push_back(channel); }
+  void SetADCValue(int value) { GammaADCValue.push_back(value); }
+  void SetTDCChannel(int channel) { GammaTDCChannel.push_back(channel); }
+  void SetTDCValue(int value) { GammaTDCValue.push_back(value); }
 
   double GetEnergy(int i){return GammaEnergy.at(i);}
   double GetTheta(int i){return GammaTheta.at(i);}

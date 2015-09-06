@@ -34,6 +34,10 @@ int **X1TDCChannelLimits;
 int *HagarADCChannelLimits;
 int *HagarTDCChannelLimits;
 
+int NumberOfLEPS;
+int *LEPSADCChannelLimits;
+int *LEPSTDCChannelLimits;
+
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
 
@@ -329,6 +333,49 @@ void HagarTDCChannelsInit(int start, int stop)
   HagarTDCChannelLimits[1] = stop;
 }
 
+void LEPSNumberInit()
+{
+  LEPSADCChannelLimits = new int[NumberOfLEPS];
+  if (NumberOfLEPS > 0)
+    printf("Using %d LEPSs\n", NumberOfLEPS);
+
+  for(int i=0;i<NumberOfLEPS;i++)
+  {
+    LEPSADCChannelLimits[i] = -1;
+  }
+
+  LEPSTDCChannelLimits = new int[NumberOfLEPS];
+  for(int i=0;i<NumberOfLEPS;i++)
+  {
+    LEPSTDCChannelLimits[i] = -1;
+  }
+}
+
+void LEPSADCChannelsInit(int det, int start)
+{
+  if(det<=NumberOfLEPS)
+  {
+    LEPSADCChannelLimits[det-1] = start;
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of LEPS detectors - skipped enabling this detector\n");
+  }
+}
+
+void LEPSTDCChannelsInit(int det, int start)
+{
+  if(det<=NumberOfLEPS)
+  {
+    LEPSTDCChannelLimits[det-1] = start;
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of LEPS detectors - skipped enabling this detector\n");
+  }
+}
+
+
 void PulseLimitsInit()
 {
 #ifdef VERBOSE
@@ -575,6 +622,8 @@ void ReadConfiguration()
   bool W1TDCChannelRead = false;
   bool X1ADCChannelRead = false;
   bool X1TDCChannelRead = false;
+  bool LEPSADCRead = false;
+  bool LEPSTDCRead = false;
   bool HagarUsed = false;
   bool HagarADCChannelRead = false;
   bool HagarTDCChannelRead = false;
@@ -599,7 +648,7 @@ void ReadConfiguration()
     while(ConfigRead)
     {
       std::string LineBuffer;
-      if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !X1ADCChannelRead && !X1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
+      if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !X1ADCChannelRead && !X1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !LEPSADCRead && !LEPSTDCRead)
       {
 	input >> LineBuffer;
 	if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
@@ -625,6 +674,12 @@ void ReadConfiguration()
 	  input >> LineBuffer;
 	  NumberOfX1 = atoi(LineBuffer.c_str());
 	  X1NumberInit();
+	}
+	else if(LineBuffer.compare(0,12,"NumberOfLEPS") == 0)
+	{
+	  input >> LineBuffer;
+	  NumberOfLEPS = atoi(LineBuffer.c_str());
+	  LEPSNumberInit();
 	}
 	else if(LineBuffer.compare(0,10,"ADCModules") == 0)
 	{
@@ -679,6 +734,14 @@ void ReadConfiguration()
 	{
 	  if(X1TDCChannelRead==false)X1TDCChannelRead = true;
 	  else if(X1TDCChannelRead==true)X1TDCChannelRead = false;
+	}
+	else if(LineBuffer.compare(0,15,"LEPSADCChannels") == 0)
+	{
+	  LEPSADCRead = !LEPSADCRead; 
+	}
+	else if(LineBuffer.compare(0,15,"LEPSTDCChannels") == 0)
+	{
+	  LEPSTDCRead = !LEPSTDCRead;
 	}
 	else if(LineBuffer.compare(0,9,"HagarUsed") == 0)
 	{
@@ -1053,6 +1116,46 @@ void ReadConfiguration()
 	}
       }
 
+      if(LEPSADCRead)
+      {
+	int num = 0, start = -1;
+	input >> LineBuffer;
+	if(LineBuffer.compare(0,15,"LEPSADCChannels") == 0)
+	{
+	  LEPSADCRead = !LEPSADCRead;
+	}
+	else
+	{
+	  printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
+	  num = atoi(LineBuffer.c_str());
+	  input>> LineBuffer;
+	  printf("Channel: %d\n",atoi(LineBuffer.c_str()));
+	  start = atoi(LineBuffer.c_str());
+
+	  LEPSADCChannelsInit(num, start);
+	}
+      }
+
+      if(LEPSTDCRead)
+      {
+	int num = 0, start = -1;
+	input >> LineBuffer;
+	if(LineBuffer.compare(0,15,"LEPSTDCChannels") == 0)
+	{
+	  LEPSTDCRead = !LEPSTDCRead;
+	}
+	else
+	{
+	  printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
+	  num = atoi(LineBuffer.c_str());
+	  input>> LineBuffer;
+	  printf("Channel: %d\n",atoi(LineBuffer.c_str()));
+	  start = atoi(LineBuffer.c_str());
+
+	  LEPSTDCChannelsInit(num, start);
+	}
+      }
+
       if(HagarADCChannelRead)
       {
 	int start = -1, stop = -1;
@@ -1105,9 +1208,27 @@ void ReadConfiguration()
 
 void PrintParameters()
 {
-  printf("ADCModules: %d\n",ADCModules);
-  printf("ADCsize: %d\n",ADCsize);
-  printf("TDCModules: %d\n",TDCModules);
-  printf("TDCsize: %d\n",TDCsize);
+  printf("\n");
+  printf("-------------------------------------------------------\n");
+  printf(" Configuration Summary\n");
+  printf("-------------------------------------------------------\n");
+  printf(" ADC: %d modules, %d channels\n", ADCModules, ADCsize);
+  printf(" TDC: %d modules, %d channels\n", TDCModules, TDCsize);
+  printf(" QDC: %d modules, %d channels\n", 1, QDCsize);
+  printf("-------------------------------------------------------\n");
+  printf(" Beam: %.0f MeV 4He at %.0f deg\n", T1, theta3);
+  printf(" Reaction: 12C(4He,4He)12C (inelastic)\n");
+  printf("-------------------------------------------------------\n");
+  printf(" VDCs: 1 is new, 2 is new\n");
+  printf(" Silicon detectors: ");
+  if (NumberOfW1 > 0) printf("%d W1s ", NumberOfW1 - W1Start + 1);
+  if (NumberOfX1 > 0) printf("%d X1s ", NumberOfX1);
+  if (NumberOfMMM > 0) printf("%d MMMs ", NumberOfMMM);
+  printf("\n");
+  printf(" Germanium detectors: ");
+  if (NumberOfLEPS > 0) printf("%d LEPS ", NumberOfLEPS);
+  printf("\n");
+  printf("-------------------------------------------------------\n");
+  printf("\n");
 }
 

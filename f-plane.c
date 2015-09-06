@@ -48,6 +48,7 @@
 
 #include "GammaData.h"
 #include "HagarSort.h"
+#include "LEPS.h"
 
 #include "RawData.h"
 /*------------definitions to change analysis------------------------*/
@@ -63,12 +64,14 @@ extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
 #define _RAWDATA
-#define _SILICONDATA 
+#define _SILICONDATA
 //#define _MMM
 #define _W1
 #define _X1
-//#define _GAMMADATA
+
+#define _GAMMADATA
 //#define _HAGAR
+#define _LEPS
 
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -2359,6 +2362,12 @@ INT focal_init(void)
   //  MMMLoadCuts(si);
 #endif
 
+#ifdef _GAMMADATA
+  gROOT->ProcessLine("#include \"GammaData.h\"");
+  gROOT->ProcessLine(".L GammaData.c+");
+  t1->Branch("GammaInfo", "GammaData",&gammy);
+#endif
+
 #ifdef _CLOVERDATA
   gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L CloverData.c+");
@@ -3318,6 +3327,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
+
+#ifdef _LEPS
+    if (gammy)
+    {
+      gammy = new GammaData();
+      LEPSSort(gammy, ADC, TDCHits, TDC_channel_export, TDC_value_export);
+    }
+#endif
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
    //--------------------------------------------------------------------------------------------------------
@@ -3349,6 +3366,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #endif
 
 #ifdef _GAMMADATA
+  gammy->ClearEvent();
   delete gammy;
 #endif
   
