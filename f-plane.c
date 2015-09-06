@@ -268,9 +268,9 @@ Int_t t_U2wire[MAX_WIRES_PER_EVENT];
 
 
 /*--------Histogramming Data Structures ---------------------------------------------*/
-TFile *f1=new TFile("output.root","RECREATE");
-TTree *t1=new TTree("DATA","K600 data");
-TTree *t2=new TTree("DATA2","Small dataset");
+TFile *f1;
+TTree *t1;
+TTree *t2;
 
 static TH1F *hX1_lut, *hX2_lut, *hU1_lut, *hU2_lut;
 static TH1F *hCableOff, *hCableOfftmp;
@@ -1961,6 +1961,10 @@ INT focal_init(void)
 {
    char name[256];
    char title[256];
+
+    f1=new TFile("output.root","RECREATE");
+    t1=new TTree("DATA","K600 data");
+    t2=new TTree("DATA2","Small dataset");
 
 //    setupchannel2wireXUXU();    
    //setupchannel2wireXoldXold();
