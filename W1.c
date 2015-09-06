@@ -34,7 +34,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
   mTDC.multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
 
   //int tdcSize = mTDC.GetSize();
-    
+
   //printf("mTDC.GetSize(): %d\n",mTDC.GetSize());
 
   for (int k = 0; k < mTDC.GetSize(); k++)
@@ -42,14 +42,14 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
       int tdcFront = mTDC.GetChannel(k);
       if (W1TDCFrontTest(tdcFront))
 	{
-	  //	  if(W1TDCChannelLimits[int tdcBackSize = 
+	  //	  if(W1TDCChannelLimits[int tdcBackSize =
 	  //for (int l = 0; l < mTDC.GetSize(); l++)
 	    {
 	      //int tdcBack = mTDC.GetChannel(l);
 	      //if (W1TDCBackTest(-1) && W1TDCFrontBackTest(tdcFront, -1))
 		{
 		  int DetNum = W1TDCIdentifyDetector(tdcFront, -1);
-		  if (DetNum > 0)
+		  if (DetNum > 0 && DetNum != 3)
 		    {
 		      double value = mTDC.GetValue(k);
 		      value -= TDCOffsets[mTDC.GetChannel(k)];
@@ -63,37 +63,39 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
 				    {
 				      double energyi = W1EnergyCalc(i,ADC_import[i]);
 				      double energyj = W1EnergyCalc(j,ADC_import[j]);
+				      if (energyi < 150 || energyi > 7500)
+					continue;
 				      //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				      //				      if(W1FrontBackTest(i,j,energyi,energyj,si) && W1ADCTDCChannelTestNSide(j,tdcBack))
 				      if(W1FrontBackTest(i,j,energyi,energyj,si))
 					{
 					//printf("through front-back test\n");
-					
+
 					  si->SetEnergy(energyi);          //Just use front energy because the back energy resolution is bloody terrible
 					  si->SetTheta(W1ThetaCalc(i,j));
 					  si->SetPhi(W1PhiCalc(i,j));
 					  si->SetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
 					  si->SetSiliconType("W1");
-					  
+
 					  si->SetEnergyFront(energyi);
 					  si->SetEnergyBack(energyj);
 					  si->SetTimeFront(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
 					  si->SetTimeBack(mTDC.GetValue(k));
-					  
+
 					  si->SetDetectorHit(W1DetHitNumber(i,j));
 					  si->SetStripFront(W1StripFront(i));
 					  si->SetStripBack(W1StripBack(j));
-					  
+
 					  si->SetADCChannelFront(i);
 					  si->SetADCChannelBack(j);
 					  si->SetADCValueFront(ADC_import[i]);
 					  si->SetADCValueBack(ADC_import[j]);
-					  
+
 					  si->SetTDCChannelFront(mTDC.GetChannel(k));
 					  si->SetTDCChannelBack(-1);
 					  si->SetTDCValueFront(mTDC.GetValue(k));
 					  si->SetTDCValueBack(mTDC.GetValue(k));
-					  
+
 					  si->SetMult(mTDC.GetMult(k));
 					}
 				    }
@@ -165,6 +167,8 @@ double W1PhiCalc(int FrontChannel, int BackChannel)
   return result;
 }
 
+static const double sigma = 30.;
+
 bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si)
 {
   bool result = false;
@@ -184,7 +188,8 @@ bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, doub
 	  //printf("Test condition: %f\n",diff/(0.5*(FrontEnergy+BackEnergy)));
 	  //if(diff==0)result=true;
 	  if(diff<0)diff*=-1;
-	  if(result==false && diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal
+	  /*if(result==false && diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal*/
+	  if (std::abs(diff) < 3*sigma)
 	    {
 	      //printf("Test162\n");
 	      result = true;//They are -> it's a good event

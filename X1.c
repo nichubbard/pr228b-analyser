@@ -24,6 +24,8 @@ extern double *TDCOffsets;
 
 extern Int_t t_tof;
 
+static const double sigma = 30.;
+
 void X1SiliconSort(SiliconData* si, float *ADC_import, int ntdc,
     int *TDC_channel_import, float *TDC_value_import)
 {
@@ -46,13 +48,15 @@ void X1SiliconSort(SiliconData* si, float *ADC_import, int ntdc,
 	//if (W1TDCBackTest(-1) && W1TDCFrontBackTest(tdcFront, -1))
 	{
 	  int DetNum = X1TDCIdentifyDetector(tdcFront);
-	  if (DetNum > 0)
+	  if (DetNum > 0 && DetNum != 3)
 	  {
 	    for (int i = X1ADCChannelLimits[DetNum][0]; i <= X1ADCChannelLimits[DetNum][1]; i++)
 	    {
 	      if (X1ADCTDCChannelTestPSide(i, tdcFront) && ADC_import[i] > ADCPedestals[i])
 	      {
 		double energyi = X1EnergyCalc(i,ADC_import[i]);
+		if (energyi < 150 || energyi > 7500)
+		  continue;
 		//Test whether the hits are in the front and back of the same detector and whether the energies are good
 		//				      if(W1FrontBackTest(i,j,energyi,energyj,si) && W1ADCTDCChannelTestNSide(j,tdcBack))
 		//printf("through front-back test\n");
