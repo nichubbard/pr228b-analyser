@@ -63,7 +63,7 @@
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-#define _RAWDATA
+/*#define _RAWDATA*/
 #define _SILICONDATA
 //#define _MMM
 #define _W1
@@ -538,7 +538,6 @@ void setupchannel2wireXoldXold()
 // chan 500-707 = X wires VDC2
 //
 {
-   printf("setupchannel2wireXoldXold()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -616,7 +615,6 @@ void setupchannel2wireXoldXU()
 // Mapping of wires to channels when using 1 old VDC and 1 new VDC (placed with first wireplane being the X-wires)
 // See camac-vme-cabling.xls
 {
-  printf("setupchannel2wireXoldXU()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -723,7 +721,6 @@ void setupchannel2wireXUXU()
 // This is due to design mistakes on the PCB's
 //
 {
-   printf("setupchannel2wireXUXU()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -833,7 +830,6 @@ void setupchannel2wire()
 // chan 800-943 = U wires VDC2
 
 {
-   printf("setupchannel2wire() - UXUX\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -2354,7 +2350,6 @@ INT focal_init(void)
 
 #ifdef _SILICONDATA
 //   printf("L2108\n");
-  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
@@ -2369,13 +2364,11 @@ INT focal_init(void)
 #endif
 
 #ifdef _CLOVERDATA
-  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L CloverData.c+");
   t1->Branch("CloverInfo","CloverData",&clov);
 #endif
   
 #ifdef _RAWDATA
-  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif

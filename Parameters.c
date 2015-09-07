@@ -2,6 +2,8 @@
 
 /*#define VERBOSE*/
 
+#include "ame.h"
+
 
 int ADCModules;
 
@@ -62,6 +64,7 @@ int NXRigidityPars;
 double *XRigidityPars;
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
+std::string *elements;
 double *masses;
 double T1;
 double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
@@ -72,6 +75,7 @@ void ParameterInit()
   printf("Initialising parameters\n");
 #endif
   masses = new double[4];
+  elements = new std::string[4];
   ReadConfiguration();
   PulseLimitsInit();
   ADCInit();
@@ -383,8 +387,10 @@ void PulseLimitsInit()
 #endif
 
   PulseLimits = new int[2];
-  PulseLimits[0] = -100000;
-  PulseLimits[1] = 100000;
+  /*PulseLimits[0] = 700;*/
+  /*PulseLimits[1] = 4200;*/
+  PulseLimits[0] = 0;
+  PulseLimits[1] = 0;
 }
 
 void CalibrationParametersInit()
@@ -857,6 +863,34 @@ void ReadConfiguration()
 	  printf("mass4: %f MeV/c**2\n",atof(LineBuffer.c_str()));
 	  masses[3] = atof(LineBuffer.c_str());
 	}
+	else if(LineBuffer.compare(0,5,"Beam") == 0)
+	{
+	  input >> LineBuffer;
+	  elements[0] = LineBuffer;
+	  masses[0] = AmeElementMass(LineBuffer);
+	  printf(" Beam    : %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[0]);
+	}
+	else if(LineBuffer.compare(0,6,"Target") == 0)
+	{
+	  input >> LineBuffer;
+	  elements[1] = LineBuffer;
+	  masses[1] = AmeElementMass(LineBuffer);
+	  printf(" Target  : %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[1]);
+	}
+	else if(LineBuffer.compare(0,6,"Recoil") == 0)
+	{
+	  input >> LineBuffer;
+	  elements[3] = LineBuffer;
+	  masses[3] = AmeElementMass(LineBuffer);
+	  printf(" Recoil  : %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[2]);
+	}
+	else if(LineBuffer.compare(0,8,"Ejectile") == 0)
+	{
+	  input >> LineBuffer;
+	  elements[2] = LineBuffer;
+	  masses[2] = AmeElementMass(LineBuffer);
+	  printf(" Ejectile: %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[3]);
+	}
 	else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
 	{
 	  input >> LineBuffer;
@@ -1216,10 +1250,18 @@ void PrintParameters()
   printf(" TDC: %d modules, %d channels\n", TDCModules, TDCsize);
   printf(" QDC: %d modules, %d channels\n", 1, QDCsize);
   printf("-------------------------------------------------------\n");
-  printf(" Beam: %.0f MeV 4He at %.0f deg\n", T1, theta3);
-  printf(" Reaction: 12C(4He,4He)12C (inelastic)\n");
+  printf(" Beam: %.0f MeV %s at %.0f deg\n", T1, elements[0].c_str(), theta3);
+  if (TestInelastic && !elements[0].empty() && !elements[1].empty())
+  {
+    printf(" Reaction: %s(%s,%s')%s (inelastic)\n", elements[1].c_str(), elements[0].c_str(), elements[0].c_str(), elements[1].c_str());
+  }
+  else if (!elements[0].empty() && !elements[1].empty() && !elements[2].empty() && !elements[3].empty())
+  {
+    printf(" Reaction: %s(%s,%s)%s\n", elements[1].c_str(), elements[0].c_str(), elements[2].c_str(), elements[3].c_str());
+  }
   printf("-------------------------------------------------------\n");
-  printf(" VDCs: 1 is new, 2 is new\n");
+  printf(" VDCs: 1 is %s, 2 is %s\n",
+      VDC1_new ? "new" : "old", VDC2_new ? "new" : "old");
   printf(" Silicon detectors: ");
   if (NumberOfW1 > 0) printf("%d W1s ", NumberOfW1 - W1Start + 1);
   if (NumberOfX1 > 0) printf("%d X1s ", NumberOfX1);
