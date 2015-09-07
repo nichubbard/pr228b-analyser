@@ -50,15 +50,17 @@
 //#include "srim.h"
 
 // First channel to start fitting to
-static const int channel_start = 0;
+static const int channel_start = 8;
 // Number of ADC channels to fit to
-static const int channels = 224;
+static const int channels = 16;
 // Alpha energies for each detected peak (in ascending order)
 //static const double alpha_energies[] = { 4784.34, 5489.48, 6002.35, 7686.82 };
 //Number of alpha peaks (size of alpha_energies array)
 //static const int alpha_peaks = 4;
-static const double alpha_energies[] = { 5340.36, 5685.37, 6050.78, 6778.3, 8784.86 };
-static const int alpha_peaks = 5;
+//static const double alpha_energies[] = { 5340.36, 5685.37, 6050.78, 6778.3, 8784.86 };
+//static const int alpha_peaks = 5;
+static const double alpha_energies[] = { 662, 1170, 1330 };
+static const int alpha_peaks = 3;
 
 // Perform calibration on SiliconInfo entries (filtered as particles) rather
 // than RawInfo entries (raw ADC values)
@@ -80,10 +82,10 @@ static const bool save_graphs = true;
 
 // Events with an ADC value below this threshold will not be included in the
 // peak fitting histograms
-static const int threshold = 1000;
+static const int threshold = 500;
 
 // The number of bins, start and end value for the histograms
-static const int h_bins = 4096 / 8;
+static const int h_bins = 4096 / 4;
 static const int h_start = 0;
 static const int h_end = 4096;
 
@@ -105,7 +107,7 @@ static const int spectrum_pre_smooth = 2;
 static const double spectrum_sigma = 2;
 // The threshold of detected peaks, peaks less than threshold*height of
 // the largest peak are ignored
-static const double spectrum_threshold = 0.30;
+static const double spectrum_threshold = 0.10;
 
 // Calibration data for each ADC Channel
 struct CalibrateData
@@ -316,22 +318,31 @@ void Calibrate::Terminate()
         std::copy(&peakx[0], &peakx[peaks], &sorted[0]);
         std::sort(&sorted[0], &sorted[peaks]);
         // TODO: Make this configurable (sub_peaks array?)
-        if (peaks == 7)
-        {
-            // Cool ugly hack to remove a side-peak (third peak)
-            float* new_sorted = new float[6];
-            std::copy(&sorted[1], &sorted[peaks], &new_sorted[0]);
-            peaks = 6;
-            delete[] sorted;
-            sorted = new_sorted;
-        }
+        //if (peaks == 7)
+        //{
+             //Cool ugly hack to remove a side-peak (third peak)
+            //float* new_sorted = new float[6];
+            //std::copy(&sorted[1], &sorted[peaks], &new_sorted[0]);
+            //peaks = 6;
+            //delete[] sorted;
+            //sorted = new_sorted;
+        //}
+        //if (peaks == 6)
+        //{
+             //Cool ugly hack to remove a side-peak (third peak)
+            //float* new_sorted = new float[5];
+            //std::copy(&sorted[0], &sorted[2], &new_sorted[0]);
+            //std::copy(&sorted[3], &sorted[peaks], &new_sorted[2]);
+            //peaks = 5;
+            //delete[] sorted;
+            //sorted = new_sorted;
+        //}
         if (peaks == 6)
         {
-            // Cool ugly hack to remove a side-peak (third peak)
-            float* new_sorted = new float[5];
-            std::copy(&sorted[0], &sorted[2], &new_sorted[0]);
-            std::copy(&sorted[3], &sorted[peaks], &new_sorted[2]);
-            peaks = 5;
+            float* new_sorted = new float[3];
+            std::copy(&sorted[0], &sorted[1], &new_sorted[0]);
+            std::copy(&sorted[4], &sorted[6], &new_sorted[1]);
+            peaks = 3;
             delete[] sorted;
             sorted = new_sorted;
         }
