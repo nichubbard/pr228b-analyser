@@ -1180,7 +1180,7 @@ void ReadConfiguration()
 	}
 	else
 	{
-	  printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
+	  printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
 	  input>> LineBuffer;
 	  printf("Channel: %d\n",atoi(LineBuffer.c_str()));

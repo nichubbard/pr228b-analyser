@@ -215,26 +215,6 @@ Int_t t_U2wireUsed[MAX_WIRES_PER_EVENT];
 Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
 #endif
 
-#ifdef _ADC
-Double_t t_NaI[8];
-Double_t t_NaIE[8];
-Double_t t_NaIEtot;
-//Double_t t_Plastic[8];
-Double_t t_SiPside1[16];
-Double_t t_SiPside2[16];
-Double_t t_SiPside3[16];
-Double_t t_SiPside4[16];
-Double_t t_SiNside1[16];
-Double_t t_SiNside2[16];
-Double_t t_SiNside3[16];
-Double_t t_SiNside4[16];
-Double_t t_NaITDC[7];
-Double_t t_SiPside1TDC[16];
-Double_t t_SiPside2TDC[16];
-Double_t t_SiPside3TDC[16];
-Double_t t_SiPside4TDC[16];
-#endif
-
 #ifdef _SILICONDATA
 SiliconData *si;
 #endif
@@ -1023,19 +1003,6 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    #endif
 
    t_pulser=0;
-
-   #ifdef _ADC
-   for(int i = 0; i < 7 ; i++) { 
-      t_NaI[i]=0.; t_NaIE[i]=0.; //t_Plastic[i]=0.;
-   }
-   for(int i = 0; i < 16 ; i++) { 
-      t_SiPside1[i]=-1.; t_SiPside2[i]=-1.; t_SiPside3[i]=-1.; t_SiPside4[i]=-1.;
-   }
-   for(int i = 0; i < 16 ; i++) { 
-      t_SiNside1[i]=-1.; t_SiNside2[i]=-1.; t_SiNside3[i]=-1.; t_SiNside4[i]=-1.; 
-   }
-   t_NaIEtot=0.;
-   #endif
 
    #ifdef _MOVIE 
    for(int i =0; i < MAX_WIRES_PER_EVENT; i++) {	
@@ -2291,29 +2258,6 @@ INT focal_init(void)
   t1->Branch("PhiSCAT",&t_PhiSCAT,"t_PhiSCAT/D");
   #endif
 
-  #ifdef _ADC
-//   ADC = new float[32*ADCModules];
-  
-  t1->Branch("NaI",&t_NaI,"t_NaI[7]/D");
-  t1->Branch("NaIE",&t_NaIE,"t_NaIE[7]/D");
-  t1->Branch("NaIEtot",&t_NaIEtot,"t_NaIEtot/D");
-  t1->Branch("SiPside1",&t_SiPside1,"t_SiPside1[16]/D");
-  t1->Branch("SiPside2",&t_SiPside2,"t_SiPside2[16]/D");
-  t1->Branch("SiPside3",&t_SiPside3,"t_SiPside3[16]/D");
-  t1->Branch("SiPside4",&t_SiPside4,"t_SiPside4[16]/D");
-  t1->Branch("SiNside1",&t_SiNside1,"t_SiNside1[16]/D");
-  t1->Branch("SiNside2",&t_SiNside2,"t_SiNside2[16]/D");
-  t1->Branch("SiNside3",&t_SiNside3,"t_SiNside3[16]/D");
-  t1->Branch("SiNside4",&t_SiNside4,"t_SiNside4[16]/D");
-  t1->Branch("NaITDC",&t_NaITDC,"t_NaITDC[7]/D");
-  t1->Branch("SiPside1TDC",&t_SiPside1TDC,"t_SiPside1TDC[16]/D");
-  t1->Branch("SiPside2TDC",&t_SiPside2TDC,"t_SiPside2TDC[16]/D");
-  t1->Branch("SiPside3TDC",&t_SiPside3TDC,"t_SiPside3TDC[16]/D");
-  t1->Branch("SiPside4TDC",&t_SiPside4TDC,"t_SiPside4TDC[16]/D");
-  
-  
-  #endif
- 
   #ifdef _POLARIZATION
   t1->Branch("polu",&t_polu,"t_polu/I");   //PR153, polarized beam
   t1->Branch("pold",&t_pold,"t_pold/I");   //PR153, polarized beam
@@ -2486,40 +2430,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_pad2lowP=pad2lowp;	    
    t_runtime=runtime;
 
-   //---------------------------------------------------------------------
-   //Put ADC info into TTree
-   #ifdef _ADC
-
- 
-   Int_t Pside1Pedestal[16]={350,300,300,300,300,300,300,300,300,320,360,360,360,360,360,360};
-   Int_t Pside2Pedestal[16]={250,280,280,280,280,280,280,280,300,220,300,300,300,300,300,300};
-   Int_t Pside3Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
-   Int_t Pside4Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
-
-   Int_t Nside1Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
-   Int_t Nside2Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
-   Int_t Nside3Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
-   Int_t Nside4Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
-
-   for(int i = 0; i < 16 ; i++) { 
-      if(Pside1[i]>Pside1Pedestal[i]) t_SiPside1[i]=Pside1[i];		
-      if(Pside2[i]>Pside2Pedestal[i]) t_SiPside2[i]=Pside2[i];		
-      if(Pside3[i]>Pside3Pedestal[i]) t_SiPside3[i]=Pside3[i];		
-      if(Pside4[i]>Pside4Pedestal[i]) t_SiPside4[i]=Pside4[i];		
-   }
-   for(int i = 0; i < 16 ; i++) {  //funny ribbon cables to caen invert order of Si chan, but we fixed it in ECL/NIM breakout board
-      if(Nside1[i]>Nside1Pedestal[i]) t_SiNside1[i]=Nside1[i];  
-      if(Nside2[i]>Nside2Pedestal[i]) t_SiNside2[i]=Nside2[i];  
-      if(Nside3[i]>Nside3Pedestal[i]) t_SiNside3[i]=Nside3[i];		 
-      if(Nside4[i]>Nside4Pedestal[i]) t_SiNside4[i]=Nside4[i];		 
-   }
-   for(int i = 0; i < 8 ; i++) { 
-      t_NaI[i]=NaI[i];
-    }
-
-   #endif
-
-
    //----------------------------------------------------------------------
    // look for TDC0 bank 
 
@@ -2650,30 +2560,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       
       if(tdcmodule<8){
 	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 
-	
-	
-	
-#ifdef _ADC
-	if(tdcmodule==6){
-	  if(channel>63 && channel<80){
-	    t_SiPside1TDC[channel-64]=ref_time;
-	  }
-	  if(channel>79 && channel<96){
-	    t_SiPside2TDC[channel-80]=ref_time;
-	  }
-	  if(channel>95 && channel<112){
-	    t_SiPside3TDC[channel-96]=ref_time;
-	  }
-	  if(channel>111 && channel<128){
-	    t_SiPside4TDC[channel-112]=ref_time;
-	  }
-	}
-	if(tdcmodule==5){
-	  if(channel>24 && channel<31){
-	    t_NaITDC[channel-25]=ref_time;
-	  }
-	}
-#endif
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128

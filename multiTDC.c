@@ -54,6 +54,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 			else if (ChannelCounter[channel] > 1 && GoodChannelCounter[channel] > 1)
 			{
 				printf("The number of TDC hits within the user-defined 'good pulse' is greater than 1; the number of hits is %d. The code currently doesn't deal with this.\n",GoodChannelCounter[TDC_channel_import[n]]);
+				printf(" Pulse channel: %d, value: %f\n", channel, value);
 			}
 			else if (ChannelCounter[channel] > 1 && GoodChannelCounter[channel] == 0)
 			{
