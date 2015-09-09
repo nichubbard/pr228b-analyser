@@ -27,6 +27,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <TCanvas.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
@@ -46,8 +47,8 @@ void Pedestals::Begin(TTree * /*tree*/)
    TString option = GetOption();
    for (size_t i = 0; i < channels; ++i)
    {
-			std::stringstream buf;
-  		buf << "adc" << i;
+      std::stringstream buf;
+      buf << "adc" << i;
       adcs[i] = new TH1I(buf.str().c_str(), "", 4096, 0, 4096);
    }
 }
@@ -104,12 +105,15 @@ void Pedestals::Terminate()
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
 
-	 ofstream output;
-	 output.open("PedestalsPR228B.dat");	 
+   ofstream output;
+   output.open("../analysis/PedestalsPR228B.dat");
+   TCanvas* c1 = new TCanvas("ADC Pedestals");
    for (size_t i = 0; i < channels; ++i)
    {
+      adcs[i]->Draw();
+      c1->SaveAs("../analysis/pedestals/ADCChannel" + TString::LLtoa(i, 10) + ".png");
       output << i << " " << adcs[i]->GetXaxis()->GetBinUpEdge(adcs[i]->GetMaximumBin()) << std::endl;
    }
-	 output << "eof";
-	 output.close();
+   output << "eof";
+   output.close();
 }
