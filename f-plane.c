@@ -63,15 +63,15 @@
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-/*#define _RAWDATA*/
+#define _RAWDATA
 #define _SILICONDATA
 //#define _MMM
 #define _W1
 #define _X1
 
-#define _GAMMADATA
+//#define _GAMMADATA
 //#define _HAGAR
-#define _LEPS
+//#define _LEPS
 
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
