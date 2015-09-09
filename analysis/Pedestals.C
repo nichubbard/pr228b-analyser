@@ -112,7 +112,15 @@ void Pedestals::Terminate()
    {
       adcs[i]->Draw();
       c1->SaveAs("../analysis/pedestals/ADCChannel" + TString::LLtoa(i, 10) + ".png");
-      output << i << " " << adcs[i]->GetXaxis()->GetBinUpEdge(adcs[i]->GetMaximumBin()) << std::endl;
+      int maxBin = adcs[i]->GetMaximumBin();
+      int highBin;
+      for (highBin = maxBin; highBin < adcs[i]->GetNbinsX(); ++highBin)
+      {
+         if (adcs[i]->GetBinContent(highBin) == 0)
+            break;
+      }
+      highBin -= 1;
+      output << i << " " << adcs[i]->GetXaxis()->GetBinUpEdge(highBin) << std::endl;
    }
    output << "eof";
    output.close();
