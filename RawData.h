@@ -13,9 +13,10 @@ public :
 private :
   std::vector<int> ADCChannels;
   std::vector<int> ADCValues;
+  std::vector<double> ADCCalibratedValues;
   std::vector<int> TDCChannels;
   std::vector<int> TDCValues;
-  std::vector<double> ADCCalibratedValues;
+  std::vector<double> TDCCalibratedValues;
   std::vector<int> QDCValues;
   
 public :
@@ -23,6 +24,7 @@ public :
   void SetADCValue(int channel, int value)	{ADCChannels[channel] = channel; ADCValues[channel] = value;}
   void SetTDCChannel(int entry, int channel)	{TDCChannels[entry] = channel;}
   void SetTDCValue(int entry, int value)	{TDCValues[entry] = value;}
+  void SetTDCCalibratedValue(int entry, double value) { TDCCalibratedValues[entry] = value; }
   void SetADCCalibratedValue(int channel, double value) {ADCCalibratedValues[channel] = value;}
   void SetQDCValue(int channel, int value)	{QDCValues[channel] = value;}
   
