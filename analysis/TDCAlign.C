@@ -27,20 +27,24 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <TCanvas.h>
 #include <TCutG.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
 
-static const size_t channel_start = 832;
-static const size_t channel_end = 1008;
+static const int channel_start = 832;
+static const int channel_end = 1008;
 static const size_t channels = channel_end - channel_start;
 
 static const int h_bins = 1000;
-static const int h_start = -2000;
-static const int h_end = 2000;
+static const int h_start = -10000;
+static const int h_end = 10000;
 
 TH1F* tdc[channels];
+TCutG* CUTpid;
+
+using namespace std;
 
 void TDCAlign::Begin(TTree * /*tree*/)
 {
@@ -55,6 +59,9 @@ void TDCAlign::Begin(TTree * /*tree*/)
 		buf << "tdc" << i;
 		tdc[i] = new TH1F(buf.str().c_str(), "", h_bins, h_start, h_end);
 	}
+	TFile* f = TFile::Open("CUTpid1098.root", "OLD");
+	CUTpid = (TCutG*)f->Get("CUTpid");
+	f->Close();
 }
 
 void TDCAlign::SlaveBegin(TTree * /*tree*/)
@@ -89,6 +96,10 @@ Bool_t TDCAlign::Process(Long64_t entry)
 	b_t_tof->GetEntry(entry);
 	b_SiliconInfo_TDCChannelFront->GetEntry(entry);
 	b_SiliconInfo_TDCValueFront->GetEntry(entry);
+	b_t_pad1->GetEntry(entry);
+
+	if (!CUTpid->IsInside(tof, pad1))
+		return kTRUE;
 	for (size_t i = 0; i < TDCChannelFront.size(); ++i)
 	{
 		if (TDCChannelFront[i] >= channel_start && TDCChannelFront[i] < channel_end)
@@ -96,7 +107,6 @@ Bool_t TDCAlign::Process(Long64_t entry)
 			tdc[TDCChannelFront[i] - channel_start]->Fill(TDCValueFront[i] - tof);
 		}
 	}
-
 
 	return kTRUE;
 }
@@ -116,28 +126,18 @@ void TDCAlign::Terminate()
 	// the results graphically or save the results to file.
 	int bin0 = tdc[0]->GetMaximumBin();
 	ofstream output;
-	output.open("TDCAlignPR228B.dat");
+	output.open("../analysis/TDCAlignPR228B.dat");
 	using std::endl;
 	output << channel_start << " " << 0 << endl;
+	TCanvas* c1 = new TCanvas("silicon times");
 	for (size_t i = 1; i < channels; ++i)
 	{
+		tdc[i]->Draw();
+		c1->SaveAs("../analysis/align/TDCChannel" + TString::LLtoa(i, 10) + ".png");
 		int bin = tdc[i]->GetMaximumBin();
 		int offset = bin - bin0;
 		output << i + channel_start << " " << offset << endl;
 	}
 	output << "eof";
-	output.close();
-
-	output.open("TDC_Calibration_PR228B.h");
-	output << "double calpartdc[1024] = { " << endl;
-	for (size_t i = 0; i <= channel_start; ++i)
-		output << "0, " << endl;
-	for (size_t i = 1; i < channels; ++i)
-	{
-		int bin = tdc[i]->GetMaximumBin();
-		int offset = bin - bin0;
-		output << offset << ", " << endl;
-	}
-	output << "}";
 	output.close();
 }

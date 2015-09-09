@@ -103,22 +103,6 @@ public :
    Double_t        rigidity3;
    Double_t        theta;
    Double_t        phi;
-   Double_t        NaI[7];
-   Double_t        NaIE[7];
-   Double_t        NaIEtot;
-   Double_t        SiPside1[16];
-   Double_t        SiPside2[16];
-   Double_t        SiPside3[16];
-   Double_t        SiPside4[16];
-   Double_t        SiNside1[16];
-   Double_t        SiNside2[16];
-   Double_t        SiNside3[16];
-   Double_t        SiNside4[16];
-   Double_t        NaITDC[7];
-   Double_t        SiPside1TDC[16];
-   Double_t        SiPside2TDC[16];
-   Double_t        SiPside3TDC[16];
-   Double_t        SiPside4TDC[16];
  //SiliconData     *SiliconInfo;
    Int_t           SiliconHits;
    vector<double>  SiliconEnergy;
@@ -232,22 +216,6 @@ public :
    TBranch        *b_t_rigidity3;   //!
    TBranch        *b_t_theta;   //!
    TBranch        *b_t_phi;   //!
-   TBranch        *b_t_NaI;   //!
-   TBranch        *b_t_NaIE;   //!
-   TBranch        *b_t_NaIEtot;   //!
-   TBranch        *b_t_SiPside1;   //!
-   TBranch        *b_t_SiPside2;   //!
-   TBranch        *b_t_SiPside3;   //!
-   TBranch        *b_t_SiPside4;   //!
-   TBranch        *b_t_SiNside1;   //!
-   TBranch        *b_t_SiNside2;   //!
-   TBranch        *b_t_SiNside3;   //!
-   TBranch        *b_t_SiNside4;   //!
-   TBranch        *b_t_NaITDC;   //!
-   TBranch        *b_t_SiPside1TDC;   //!
-   TBranch        *b_t_SiPside2TDC;   //!
-   TBranch        *b_t_SiPside3TDC;   //!
-   TBranch        *b_t_SiPside4TDC;   //!
    TBranch        *b_SiliconInfo_SiliconHits;   //!
    TBranch        *b_SiliconInfo_SiliconEnergy;   //!
    TBranch        *b_SiliconInfo_SiliconTheta;   //!
@@ -395,22 +363,6 @@ void TDCAlign::Init(TTree *tree)
    fChain->SetBranchAddress("rigidity3", &rigidity3, &b_t_rigidity3);
    fChain->SetBranchAddress("theta", &theta, &b_t_theta);
    fChain->SetBranchAddress("phi", &phi, &b_t_phi);
-   fChain->SetBranchAddress("NaI", NaI, &b_t_NaI);
-   fChain->SetBranchAddress("NaIE", NaIE, &b_t_NaIE);
-   fChain->SetBranchAddress("NaIEtot", &NaIEtot, &b_t_NaIEtot);
-   fChain->SetBranchAddress("SiPside1", SiPside1, &b_t_SiPside1);
-   fChain->SetBranchAddress("SiPside2", SiPside2, &b_t_SiPside2);
-   fChain->SetBranchAddress("SiPside3", SiPside3, &b_t_SiPside3);
-   fChain->SetBranchAddress("SiPside4", SiPside4, &b_t_SiPside4);
-   fChain->SetBranchAddress("SiNside1", SiNside1, &b_t_SiNside1);
-   fChain->SetBranchAddress("SiNside2", SiNside2, &b_t_SiNside2);
-   fChain->SetBranchAddress("SiNside3", SiNside3, &b_t_SiNside3);
-   fChain->SetBranchAddress("SiNside4", SiNside4, &b_t_SiNside4);
-   fChain->SetBranchAddress("NaITDC", NaITDC, &b_t_NaITDC);
-   fChain->SetBranchAddress("SiPside1TDC", SiPside1TDC, &b_t_SiPside1TDC);
-   fChain->SetBranchAddress("SiPside2TDC", SiPside2TDC, &b_t_SiPside2TDC);
-   fChain->SetBranchAddress("SiPside3TDC", SiPside3TDC, &b_t_SiPside3TDC);
-   fChain->SetBranchAddress("SiPside4TDC", SiPside4TDC, &b_t_SiPside4TDC);
    fChain->SetBranchAddress("SiliconHits", &SiliconHits, &b_SiliconInfo_SiliconHits);
    fChain->SetBranchAddress("SiliconEnergy", &SiliconEnergy, &b_SiliconInfo_SiliconEnergy);
    fChain->SetBranchAddress("SiliconTheta", &SiliconTheta, &b_SiliconInfo_SiliconTheta);

@@ -1,13 +1,15 @@
 {
+    const int runs[] = {
+        1098
+    };
+    const size_t n_runs = sizeof(runs) / sizeof(runs[0]);
     TChain chain("DATA");
-    chain.Add("run00124.root");
-    chain.Add("run00125.root");
-    chain.Add("run00126.root");
-    chain.Add("run00128.root");
-    chain.Add("run00129.root");
-    chain.Add("run00130.root");
-    chain.Add("run00132.root");
-    //chain.Add("run00150.root");
+    for (size_t i = 0; i < n_runs; ++i)
+    {
+        char buf[32];
+        sprintf(buf, "run%05d.root", runs[i]);
+        chain.Add(buf);
+    }
 
     TProof* proof = TProof::Open("lite://");
     chain.SetProof();
