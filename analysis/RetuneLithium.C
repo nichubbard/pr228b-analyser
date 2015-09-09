@@ -30,7 +30,7 @@ void RetuneLithium()
     {
         double* x = ts->GetPositionX();
         std::sort(&x[0], &x[peaks]);
-        TGraph* graph = new TGraph(6, &x[0], rigidities);
+        TGraph* graph = new TGraph(6, &x[1], rigidities);
         graph->Fit("pol2");
         graph->Draw("A*");
     }
