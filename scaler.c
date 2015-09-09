@@ -98,14 +98,14 @@ INT scaler_init(void)
    hCIU       = H1_BOOK("Scaler_CIU","CI scaler (UnInhibited)",7200,0,7200);
    hTriggerI  = H1_BOOK("Scaler_TriggerI","Trigger scaler (Inhibited)",7200,0,7200);
    hTriggerU  = H1_BOOK("Scaler_TriggerU","Trigger scaler (UnInhibited)",7200,0,7200);
-   hBLM1  = H1_BOOK("Scaler_BLM1","BLM scaler 1",7200,0,7200);
-   hBLM2  = H1_BOOK("Scaler_BLM2","BLM scaler 2",7200,0,7200);
-   hBLM3  = H1_BOOK("Scaler_BLM3","BLM scaler 3",7200,0,7200);
-   hBLM4  = H1_BOOK("Scaler_BLM4","BLM scaler 4",7200,0,7200);
-   hBLM5  = H1_BOOK("Scaler_BLM5","BLM scaler 5",7200,0,7200);
-   hBLM6  = H1_BOOK("Scaler_BLM6","BLM scaler 6",7200,0,7200);
-   hBLM7  = H1_BOOK("Scaler_BLM7","BLM scaler 7",7200,0,7200);
-   hBLM8  = H1_BOOK("Scaler_BLM8","BLM scaler 8",7200,0,7200);
+   /*hBLM1  = H1_BOOK("Scaler_BLM1","BLM scaler 1",7200,0,7200);*/
+   /*hBLM2  = H1_BOOK("Scaler_BLM2","BLM scaler 2",7200,0,7200);*/
+   /*hBLM3  = H1_BOOK("Scaler_BLM3","BLM scaler 3",7200,0,7200);*/
+   /*hBLM4  = H1_BOOK("Scaler_BLM4","BLM scaler 4",7200,0,7200);*/
+   /*hBLM5  = H1_BOOK("Scaler_BLM5","BLM scaler 5",7200,0,7200);*/
+   /*hBLM6  = H1_BOOK("Scaler_BLM6","BLM scaler 6",7200,0,7200);*/
+   /*hBLM7  = H1_BOOK("Scaler_BLM7","BLM scaler 7",7200,0,7200);*/
+   /*hBLM8  = H1_BOOK("Scaler_BLM8","BLM scaler 8",7200,0,7200);*/
 
 
    return SUCCESS;
@@ -155,18 +155,18 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
      }                                                             // f as bits 29-32 (28-31)
    }
   
-   /*for(unsigned int j = 0; j <psclr[0]; j++) {   //use of unsigned int to get rid of compiler warning:*/
-     /*hTriggerU->Fill(counter);			 //"warning: comparison between signed and unsigned integer expressions"*/
-   /*}*/
-   /*for(unsigned int j = 0; j <psclr[1]; j++) {*/
-     /*hPulserU->Fill(counter);*/
-   /*}; */
-   /*for(unsigned int j = 0; j <psclr[2]; j++) {*/
-     /*hCIU->Fill(counter);*/
-   /*}*/
-   /*for(unsigned int j = 0; j <psclr[3]; j++) {*/
-     /*hClockU->Fill(counter);*/
-   /*}*/
+   for(unsigned int j = 0; j <psclr[0]; j++) {   //use of unsigned int to get rid of compiler warning:
+     hTriggerU->Fill(counter);			 //"warning: comparison between signed and unsigned integer expressions"
+   }
+   for(unsigned int j = 0; j <psclr[1]; j++) {
+     hPulserU->Fill(counter);
+   }; 
+   for(unsigned int j = 0; j <psclr[2]; j++) {
+     hCIU->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[3]; j++) {
+     hClockU->Fill(counter);
+   }
    /*for(unsigned int j = 0; j <psclr[8] ; j++) {*/
      /*hBLM1->Fill(counter);*/
    /*}*/
@@ -191,18 +191,18 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    /*for(unsigned int j = 0; j <psclr[15] ; j++) {*/
      /*hBLM8->Fill(counter);*/
    /*}*/
-   /*for(unsigned int j = 0; j <psclr[20] ; j++) {   */
-     /*hTriggerI->Fill(counter);*/
-   /*}*/
-   /*for(unsigned int j = 0; j <psclr[21] ; j++) {   */
-     /*hPulserI->Fill(counter);*/
-   /*}*/
-   /*for(unsigned int j = 0; j <psclr[22] ; j++) {   */
-     /*hCII->Fill(counter);*/
-   /*}*/
-   /*for(unsigned int j = 0; j <psclr[23] ; j++) {*/
-     /*hClockI->Fill(counter);*/
-   /*}*/
+   for(unsigned int j = 0; j <psclr[20] ; j++) {   
+     hTriggerI->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[21] ; j++) {   
+     hPulserI->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[22] ; j++) {   
+     hCII->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[23] ; j++) {
+     hClockI->Fill(counter);
+   }
 
 
 
