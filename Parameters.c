@@ -76,8 +76,8 @@ void ParameterInit()
 #endif
   masses = new double[4];
   elements = new std::string[4];
-  ReadConfiguration();
   PulseLimitsInit();
+  ReadConfiguration();
   ADCInit();
   QDCInit();
   PrintParameters();
@@ -164,8 +164,6 @@ void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there
 
 void W1NumberInit()
 {
-  if (NumberOfW1 > 0)
-    printf("Using %d W1s\n", NumberOfW1);
   W1ADCChannelLimits = new int*[NumberOfW1];
   NumberOfW1 += W1Start - 1;
 
@@ -639,6 +637,11 @@ void ReadConfiguration()
   bool ADCDone = false;
   bool TDCDone = false;
 
+  bool ExplicitMMM = false;
+  bool ExplicitW1 = false;
+  bool ExplicitX1 = false;
+  bool ExplicitLEPS = false;
+
   std::ifstream input;
   //input.open("config.cfg");//This is the line to change in order to change the configuration file
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
@@ -663,6 +666,7 @@ void ReadConfiguration()
 	  input >> LineBuffer;
 	  NumberOfMMM = atoi(LineBuffer.c_str());
 	  MMMNumberInit();
+	  ExplicitMMM = true;
 	}
 	else if(LineBuffer.compare(0,7,"W1Start") == 0)
 	{
@@ -674,18 +678,21 @@ void ReadConfiguration()
 	  input >> LineBuffer;
 	  NumberOfW1 = atoi(LineBuffer.c_str());
 	  W1NumberInit();
+	  ExplicitW1 = true;
 	}
 	else if(LineBuffer.compare(0,10,"NumberOfX1") == 0)
 	{
 	  input >> LineBuffer;
 	  NumberOfX1 = atoi(LineBuffer.c_str());
 	  X1NumberInit();
+	  ExplicitX1 = true;
 	}
 	else if(LineBuffer.compare(0,12,"NumberOfLEPS") == 0)
 	{
 	  input >> LineBuffer;
 	  NumberOfLEPS = atoi(LineBuffer.c_str());
 	  LEPSNumberInit();
+	  ExplicitLEPS = true;
 	}
 	else if(LineBuffer.compare(0,10,"ADCModules") == 0)
 	{
@@ -922,6 +929,14 @@ void ReadConfiguration()
 	  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
 	  Y1CorrectionParametersRead = true;
 	}
+	else if(LineBuffer.compare(0,12,"PulseLimits") == 0)
+	{
+	  input >> LineBuffer;
+	  PulseLimits[0] = atoi(LineBuffer.c_str());
+	  input >> LineBuffer;
+	  PulseLimits[1] = atoi(LineBuffer.c_str());
+	  printf("Good pulse limits: %d - %d\n", PulseLimits[0], PulseLimits[1]);
+	}
 	else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 	{
 #ifdef VERBOSE
@@ -997,7 +1012,7 @@ void ReadConfiguration()
 	{
 	  if(MMMADCChannelRead==true)MMMADCChannelRead = false;
 	}
-	else
+	else if (!ExplicitMMM || NumberOfMMM > 0)
 	{
 	  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1024,7 +1039,7 @@ void ReadConfiguration()
 	{
 	  if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
 	}
-	else
+	else if (!ExplicitMMM || NumberOfMMM > 0)
 	{
 	  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1051,7 +1066,7 @@ void ReadConfiguration()
 	{
 	  if(W1ADCChannelRead==true)W1ADCChannelRead = false;
 	}
-	else
+	else if (!ExplicitW1 || NumberOfW1 > 0)
 	{
 	  printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1078,7 +1093,7 @@ void ReadConfiguration()
 	{
 	  if(W1TDCChannelRead==true)W1TDCChannelRead = false;
 	}
-	else
+	else if (!ExplicitW1 || NumberOfW1 > 0)
 	{
 	  printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1105,7 +1120,7 @@ void ReadConfiguration()
 	{
 	  if(X1ADCChannelRead==true)X1ADCChannelRead = false;
 	}
-	else
+	else if (!ExplicitX1 || NumberOfX1 > 0)
 	{
 	  printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1132,7 +1147,7 @@ void ReadConfiguration()
 	{
 	  if(X1TDCChannelRead==true)X1TDCChannelRead = false;
 	}
-	else
+	else if (!ExplicitX1 || NumberOfX1 > 0)
 	{
 	  printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1158,7 +1173,7 @@ void ReadConfiguration()
 	{
 	  LEPSADCRead = !LEPSADCRead;
 	}
-	else
+	else if (!ExplicitLEPS || NumberOfLEPS > 0)
 	{
 	  printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1178,7 +1193,7 @@ void ReadConfiguration()
 	{
 	  LEPSTDCRead = !LEPSTDCRead;
 	}
-	else
+	else if (!ExplicitLEPS || NumberOfLEPS > 0)
 	{
 	  printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
 	  num = atoi(LineBuffer.c_str());
@@ -1262,14 +1277,30 @@ void PrintParameters()
   printf("-------------------------------------------------------\n");
   printf(" VDCs: 1 is %s, 2 is %s\n",
       VDC1_new ? "new" : "old", VDC2_new ? "new" : "old");
-  printf(" Silicon detectors: ");
-  if (NumberOfW1 > 0) printf("%d W1s ", NumberOfW1 - W1Start + 1);
-  if (NumberOfX1 > 0) printf("%d X1s ", NumberOfX1);
-  if (NumberOfMMM > 0) printf("%d MMMs ", NumberOfMMM);
-  printf("\n");
-  printf(" Germanium detectors: ");
-  if (NumberOfLEPS > 0) printf("%d LEPS ", NumberOfLEPS);
-  printf("\n");
+  if (NumberOfW1 > 0 || NumberOfMMM > 0 || NumberOfX1 > 0)
+  {
+    printf(" Silicon detectors: ");
+    if (NumberOfW1 > 0) {
+      printf("%d W1s", NumberOfW1 - W1Start + 1);
+      if (NumberOfX1 > 0 || NumberOfMMM > 0)
+	printf(",");
+      printf(" ");
+    }
+    if (NumberOfX1 > 0) {
+      printf("%d X1s ", NumberOfX1);
+      if (NumberOfMMM > 0)
+	printf(",");
+      printf(" ");
+    }
+    if (NumberOfMMM > 0) printf("%d MMMs ", NumberOfMMM);
+    printf("\n");
+  }
+  if (NumberOfLEPS > 0)
+  {
+    printf(" Germanium detectors: ");
+    if (NumberOfLEPS > 0) printf("%d LEPS ", NumberOfLEPS);
+    printf("\n");
+  }
   printf("-------------------------------------------------------\n");
   printf("\n");
 }
