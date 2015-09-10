@@ -1,11 +1,57 @@
 cmake_minimum_required (VERSION 2.6)
+include (CMakeDependentOption)
 project (analyzer)
 
 set (MIDASSYS $ENV{MIDASSYS})
 
-set (sources adc.c ame.c analyzer.c f-plane.c GammaData.c HagarSort.c
-    LEPS.c multiTDC.c Parameters.c qdc.c RawData.c scaler.c
-    SiliconData.c W1.c X1.c)
+set (sources adc.c ame.c analyzer.c f-plane.c
+    multiTDC.c Parameters.c qdc.c scaler.c)
+
+option (ENABLE_GAMMA
+    "Support sorting gamma data into GammaData, reconfigure to enable specific detectors" OFF)
+cmake_dependent_option(ENABLE_GAMMA_LEPS
+    "Support sorting LEPS data into GammaData" OFF
+    "ENABLE_GAMMA" OFF)
+option (ENABLE_RAW
+    "Store raw ADC/TDC/QDC into RawData for testing, slows down sort a lot" OFF)
+option (ENABLE_SILICON
+    "Support sorting silicon data into SiliconData, reconfigure to enable specific detectors" OFF)
+cmake_dependent_option (ENABLE_SILICON_W1
+    "Support sorting W1 data into SiliconData" OFF
+    "ENABLE_SILICON" OFF)
+cmake_dependent_option (ENABLE_SILICON_X1
+    "Support sorting X1 data into SiliconData" OFF
+    "ENABLE_SILICON" OFF)
+cmake_dependent_option (ENABLE_SILICON_MMM
+    "Support sorting MMM data into SiliconData" OFF
+    "ENABLE_SILICON" OFF)
+
+if (ENABLE_GAMMA)
+  set (sources ${sources} GammaData.c)
+endif()
+if (ENABLE_GAMMA_LEPS)
+  set (sources ${sources} LEPS.c)
+endif()
+if (ENABLE_RAW)
+  set (sources ${sources} RawData.c)
+endif()
+if (ENABLE_SILICON)
+  set (sources ${sources} SiliconData.c)
+endif()
+if (ENABLE_SILICON_MMM)
+  set (sources ${sources} MMM.c)
+endif()
+if (ENABLE_SILICON_W1)
+  set (sources ${sources} W1.c)
+endif()
+if (ENABLE_SILICON_X1)
+  set (sources ${sources} X1.c)
+endif()
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
+)
 
 include_directories("${PROJECT_BINARY_DIR}")
 

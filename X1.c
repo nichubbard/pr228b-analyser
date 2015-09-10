@@ -55,7 +55,7 @@ void X1SiliconSort(SiliconData* si, float *ADC_import, int ntdc,
 	      if (X1ADCTDCChannelTestPSide(i, tdcFront) && ADC_import[i] > ADCPedestals[i])
 	      {
 		double energyi = X1EnergyCalc(i,ADC_import[i]);
-		if (energyi < 150 || energyi > 7500)
+		if (energyi < 200 || energyi > 7500)
 		  continue;
 		//Test whether the hits are in the front and back of the same detector and whether the energies are good
 		//				      if(W1FrontBackTest(i,j,energyi,energyj,si) && W1ADCTDCChannelTestNSide(j,tdcBack))

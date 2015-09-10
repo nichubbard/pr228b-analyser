@@ -49,7 +49,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
 	      //if (W1TDCBackTest(-1) && W1TDCFrontBackTest(tdcFront, -1))
 		{
 		  int DetNum = W1TDCIdentifyDetector(tdcFront, -1);
-		  if (DetNum > 0 && DetNum != 3)
+		  if (DetNum > 0)
 		    {
 		      double value = mTDC.GetValue(k);
 		      value -= TDCOffsets[mTDC.GetChannel(k)];
@@ -63,7 +63,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
 				    {
 				      double energyi = W1EnergyCalc(i,ADC_import[i]);
 				      double energyj = W1EnergyCalc(j,ADC_import[j]);
-				      if (energyi < 150 || energyi > 7500)
+				      if (energyi < 200 || energyi > 7500)
 					continue;
 				      //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				      //				      if(W1FrontBackTest(i,j,energyi,energyj,si) && W1ADCTDCChannelTestNSide(j,tdcBack))

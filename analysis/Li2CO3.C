@@ -38,12 +38,12 @@
 
 using std::size_t;
 
-static const int tdc_gate_left = -2000;
-static const int tdc_gate_right = 0;
+static const int tdc_gate_left = -1600;
+static const int tdc_gate_right = -1200;
 
-static const double x1_oxygen_left = 5.9;
+static const double x1_oxygen_left = 6.0;
 static const double x1_oxygen_right = 6.2;
-static const double x1_background_l = 5.7;
+static const double x1_background_l = 5.8;
 static const double x1_background_r = 6.4;
 
 void Li2CO3::Begin(TTree * /*tree*/)
@@ -197,16 +197,16 @@ Bool_t Li2CO3::Process(Long64_t entry)
     }
     stats_spec_accepted++;
 
+    spectrometer->Fill(Ex);
     for (size_t i = 0; i < DetectorHit.size(); ++i)
     {
         stats_si_total++;
         raw->Fill(Ex, SiliconEnergy[i]);
-        if (SiliconEnergy[i] < 100)
+        if (SiliconEnergy[i] < 200)
         {
             stats_si_energy_rejected++;
             continue;
         }
-        spectrometer->Fill(Ex);
         silicontime->Fill(SiliconTime[i] - tof);
         if(SiliconTime[i] - tof >= tdc_gate_left && SiliconTime[i] - tof <= tdc_gate_right)
         //if (true)
@@ -520,13 +520,13 @@ void Li2CO3::Terminate()
 
     int binLeft = spectrometer->GetXaxis()->FindBin(x1_oxygen_left);
     int binRight = spectrometer->GetXaxis()->FindBin(x1_oxygen_right);
-    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right);
-    double spec_i = spectrometer->Integral(binLeft, binRight);
+    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right) / spectrometer->GetBinWidth(binLeft) * 0.31;
+    double spec_i = spectrometer->Integral(binLeft, binRight) * 0.31;
     double spec_p = spec_i - spec_b;
-    double gated_b = gatedbg->Integral(x1_oxygen_left, x1_oxygen_right);
+    double gated_b = gatedbg->Integral(x1_oxygen_left, x1_oxygen_right) / gated_px->GetBinWidth(binLeft);
     double gated_i = gated_px->Integral(binLeft, binRight);
     double gated_p = gated_i - gated_b;
-    double coinc_b = coincbg->Integral(x1_oxygen_left, x1_oxygen_right) / 2;
+    double coinc_b = coincbg->Integral(x1_oxygen_left, x1_oxygen_right) / (coinc_px->GetBinWidth(binLeft) * 2);
     double coinc_i = coinc_px->Integral(binLeft, binRight) / 2;
     double coinc_p = coinc_i - coinc_b;
 
