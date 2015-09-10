@@ -48,8 +48,14 @@ if (ENABLE_SILICON_X1)
   set (sources ${sources} X1.c)
 endif()
 
+SET(full_source "")
+FOREACH(f ${sources})
+  LIST(APPEND full_source "src/${f}")
+ENDFOREACH(f)
+SET(sources ${full_source})
+
 configure_file (
-  "${PROJECT_SOURCE_DIR}/config.h.in"
+  "${PROJECT_SOURCE_DIR}/src/config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
 )
 
