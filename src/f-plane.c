@@ -2289,7 +2289,6 @@ INT focal_init(void)
 #ifdef ENABLE_SILICON
 //   printf("L2108\n");
   gROOT->ProcessLine("#include \"SiliconData.h\"");
-  gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
 
   //  MMMLoadCuts(si);
@@ -2297,7 +2296,6 @@ INT focal_init(void)
 
 #ifdef ENABLE_GAMMA
   gROOT->ProcessLine("#include \"GammaData.h\"");
-  gROOT->ProcessLine(".L GammaData.c+");
   t1->Branch("GammaInfo", "GammaData",&gammy);
 #endif
 
@@ -2307,7 +2305,7 @@ INT focal_init(void)
 #endif
   
 #ifdef ENABLE_RAW
-  gROOT->ProcessLine(".L RawData.c+");
+  gROOT->ProcessLine("#include \"RawData.h\"");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
    return SUCCESS;
