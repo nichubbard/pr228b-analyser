@@ -38,13 +38,29 @@
 
 using std::size_t;
 
-static const int tdc_gate_left = -1600;
-static const int tdc_gate_right = -1200;
+/*
+ *static const int tdc_gate_left = -1600;
+ *static const int tdc_gate_right = -1200;
+ */
+
+static const int tdc_gate_left = 1200;
+static const int tdc_gate_right = 2000;
 
 static const double x1_oxygen_left = 6.0;
 static const double x1_oxygen_right = 6.2;
+static const double x1_oxygen_top = 1700;
+static const double x1_oxygen_bottom = 0;
 static const double x1_background_l = 5.8;
 static const double x1_background_r = 6.4;
+
+/*
+ *static const double x1_oxygen_left = 11.95;
+ *static const double x1_oxygen_right = 12.15;
+ *static const double x1_oxygen_top = 3100;
+ *static const double x1_oxygen_bottom = 2400;
+ *static const double x1_background_l = 11.8;
+ *static const double x1_background_r = 12.3;
+ */
 
 void Li2CO3::Begin(TTree * /*tree*/)
 {
@@ -54,13 +70,18 @@ void Li2CO3::Begin(TTree * /*tree*/)
 
     TString option = GetOption();
     TFile* cutfile = new TFile("CUTpid1098.root", "OLD");
+    TFile* cutx1 = new TFile("CUTX1tof1098.root", "OLD");
     CUTpid = (TCutG*)cutfile->Get("CUTpid");
+    CUTX1tof = 0;
+    CUTX1tof = (TCutG*)cutx1->Get("CUTX1tof");
 
     if (fInput)
     {
         fInput->Add(CUTpid);
+        fInput->Add(CUTX1tof);
     }
     delete cutfile;
+    delete cutx1;
 }
 
 void Li2CO3::SlaveBegin(TTree * /*tree*/)
@@ -72,7 +93,7 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
     TString option = GetOption();
 
     spectrometer = new TH1F("spectrometer", "", 800, 4, 16);
-    silicontime = new TH1F("silicontime", "", 1500, -3000, 1500);
+    silicontime = new TH1F("silicontime", "", 1500, 0, 4500);
     raw = new TH2F("raw", "", 800, 4, 16, 1000, 0, 10000);
     gated = new TH2F("gated", "", 800, 4, 16, 1000, 0, 10000);
     gated_coinc = new TH2F("gated_coinc", "", 800, 4, 16, 1000, 0, 10000);
@@ -87,6 +108,7 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
     if (fInput)
     {
         CUTpid = (TCutG*)fInput->FindObject("CUTpid");
+        CUTX1tof = (TCutG*)fInput->FindObject("CUTX1tof");
     }
 
     stats_spec_total = 0;
@@ -150,7 +172,7 @@ Bool_t Li2CO3::Process(Long64_t entry)
     std::vector<double> filteredE;
 
     stats_spec_total++;
-    if (X1chisq < 0 || X1chisq >= 0.4) {
+    if (X1chisq < 0 || X1chisq >= 0.2) {
         stats_x1_chisq++;
         return kTRUE;
     }
@@ -175,25 +197,30 @@ Bool_t Li2CO3::Process(Long64_t entry)
         stats_pid++;
         return kTRUE;
     }
+    if (CUTX1tof && !CUTX1tof->IsInside(X1pos, tof))
+    {
+        stats_pid2++;
+        return kTRUE;
+    }
     if (pad2 < 57 || pad2 > 59)
     {
         //stats_pid2++;
         //return kTRUE;
     }
-    if (Y1 < -20 || Y1 > 10)
+    if (Y1 < -10 || Y1 > 15)
     {
-        //stats_y1++;
-        //return kTRUE;
+        stats_y1++;
+        return kTRUE;
     }
-    if (Y2 < -20 || Y2 > 20)
+    if (Y2 < -15 || Y2 > 20)
     {
-        //stats_y2++;
-        //return kTRUE;
+        stats_y2++;
+        return kTRUE;
     }
-    if (ThSCAT < -1 || ThSCAT > 1)
+    if (ThSCAT < -2 || ThSCAT > 2)
     {
-        //stats_thscat++;
-        //return kTRUE;
+        stats_thscat++;
+        return kTRUE;
     }
     stats_spec_accepted++;
 
@@ -201,14 +228,15 @@ Bool_t Li2CO3::Process(Long64_t entry)
     for (size_t i = 0; i < DetectorHit.size(); ++i)
     {
         stats_si_total++;
-        raw->Fill(Ex, SiliconEnergy[i]);
-        if (SiliconEnergy[i] < 200)
+        if (SiliconEnergy[i] < 150)
         {
             stats_si_energy_rejected++;
             continue;
         }
-        silicontime->Fill(SiliconTime[i] - tof);
-        if(SiliconTime[i] - tof >= tdc_gate_left && SiliconTime[i] - tof <= tdc_gate_right)
+        raw->Fill(Ex, SiliconEnergy[i]);
+        int time = (int)abs(SiliconTime[i] - tof) % 2675;
+        silicontime->Fill(time);
+        if(time >= tdc_gate_left && time <= tdc_gate_right)
         //if (true)
         {
             filteredDhit.push_back(DetectorHit[i]);
@@ -239,7 +267,7 @@ Bool_t Li2CO3::Process(Long64_t entry)
     }
     mpcty->Fill(Ex, filteredDhit.size());
 
-    if (filteredE.size() >= 2)
+    if (filteredE.size() >= 2 && filteredE.size() < 20)
     {
         for (size_t i = 0; i < filteredE.size(); ++i)
         {
@@ -451,11 +479,11 @@ void Li2CO3::Terminate()
     specfit->SetParameter(0, a);
     specfit->SetParameter(1, mu);
     specfit->SetParameter(2, sigma);
-    spectrometer->Fit("specfit", "QNM", "", x1_background_l, x1_background_r);
+    spectrometer->Fit("specfit", "QLM", "", x1_background_l, x1_background_r);
 
     TCanvas* cgatedpx = new TCanvas("cgatedpx", "Gated Projection X");
-    double firstx = gated->GetYaxis()->FindBin(0.);
-    double lastx = gated->GetYaxis()->FindBin(1700);
+    double firstx = gated->GetYaxis()->FindBin(x1_oxygen_bottom);
+    double lastx = gated->GetYaxis()->FindBin(x1_oxygen_top);
     TH1D* gated_px = gated->ProjectionX("_px", firstx, lastx);
     gated_px->GetYaxis()->SetTitle("Counts");
     TF1* gatedfit = new TF1("gatedfit", "gaus");
@@ -468,16 +496,16 @@ void Li2CO3::Terminate()
     gatedfit->SetParameter(0, a);
     gatedfit->SetParameter(1, mu);
     gatedfit->SetParameter(2, sigma);
-    gated_px->Fit("gatedfit", "QNM", "", x1_background_l, x1_background_r);
+    gated_px->Fit("gatedfit", "QLM", "", x1_background_l, x1_background_r);
     gated_px->Draw();
 
     TCanvas* ccoincpx = new TCanvas("ccoincpx", "Coincidence Projection X");
-    firstx = gated->GetYaxis()->FindBin(0.);
-    lastx = gated->GetYaxis()->FindBin(1700);
+    firstx = gated_coinc->GetYaxis()->FindBin(x1_oxygen_bottom);
+    lastx = gated_coinc->GetYaxis()->FindBin(x1_oxygen_top);
     TH1D* coinc_px = gated_coinc->ProjectionX("_px", firstx, lastx);
     coinc_px->GetYaxis()->SetTitle("Counts");
     TF1* coincfit = new TF1("coincfit", "gaus");
-    coinc_px->Fit("coincfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
+    coinc_px->Fit("coincfit", "QLN", "", x1_oxygen_left, x1_oxygen_right);
     a = coincfit->GetParameter(0);
     mu = coincfit->GetParameter(1);
     sigma = coincfit->GetParameter(2);
@@ -486,24 +514,28 @@ void Li2CO3::Terminate()
     coincfit->SetParameter(0, a);
     coincfit->SetParameter(1, mu);
     coincfit->SetParameter(2, sigma);
-    coinc_px->Fit("coincfit", "QNM", "", x1_background_l, x1_background_r);
+    coinc_px->Fit("coincfit", "QLM", "", x1_background_l, x1_background_r);
+
     coinc_px->Draw();
 
     TF1* specbg = new TF1("specbg", "pol1");
     specbg->FixParameter(0, specfit->GetParameter(3));
     specbg->FixParameter(1, specfit->GetParameter(4));
     csp->cd();
-    spectrometer->Fit("specbg", "QF", "", x1_background_l, x1_background_r);
+    specbg->SetLineColor(kGreen);
+    spectrometer->Fit("specbg", "QF+", "", x1_background_l, x1_background_r);
     TF1* gatedbg = new TF1("gatedbg", "pol1");
     gatedbg->FixParameter(0, gatedfit->GetParameter(3));
     gatedbg->FixParameter(1, gatedfit->GetParameter(4));
     cgatedpx->cd();
-    gated_px->Fit("gatedbg", "QF", "", x1_background_l, x1_background_r);
+    gatedbg->SetLineColor(kGreen);
+    gated_px->Fit("gatedbg", "QF+", "", x1_background_l, x1_background_r);
     TF1* coincbg = new TF1("coincbg", "pol1");
     coincbg->FixParameter(0, coincfit->GetParameter(3));
     coincbg->FixParameter(1, coincfit->GetParameter(4));
     ccoincpx->cd();
-    coinc_px->Fit("coincbg", "QF", "", x1_background_l, x1_background_r);
+    coincbg->SetLineColor(kGreen);
+    coinc_px->Fit("coincbg", "QF+", "", x1_background_l, x1_background_r);
 
     TF1* specpeak = new TF1("specpeak", "gaus");
     specpeak->SetParameter(0, specfit->GetParameter(0));
@@ -520,8 +552,8 @@ void Li2CO3::Terminate()
 
     int binLeft = spectrometer->GetXaxis()->FindBin(x1_oxygen_left);
     int binRight = spectrometer->GetXaxis()->FindBin(x1_oxygen_right);
-    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right) / spectrometer->GetBinWidth(binLeft) * 0.31;
-    double spec_i = spectrometer->Integral(binLeft, binRight) * 0.31;
+    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right) / spectrometer->GetBinWidth(binLeft) *  0.259295;
+    double spec_i = spectrometer->Integral(binLeft, binRight) * 0.259295;
     double spec_p = spec_i - spec_b;
     double gated_b = gatedbg->Integral(x1_oxygen_left, x1_oxygen_right) / gated_px->GetBinWidth(binLeft);
     double gated_i = gated_px->Integral(binLeft, binRight);
