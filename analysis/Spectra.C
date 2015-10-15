@@ -2,14 +2,16 @@ void Spectra()
 {
 }
 
+TCut basecut = "CUTpid && !X1flag && !U1flag && !X2flag && !U2flag && X1chisq < 0.2";
+
 void ExSi(TCut cut = "", TString name = "ExSi")
 {
-    DATA->Draw("SiliconEnergy:Ex>>h_"+name+"(800,4,16,1000,0,10000)", "CUTpid" && cut, "col");
+    DATA->Draw("SiliconEnergy:Ex>>h_"+name+"(800,4,16,1000,0,10000)", basecut && cut, "col");
 }
 
 void SiliconTime(TCut cut = "")
 {
-    DATA->Draw("SiliconTime-tof>>h_SiliconTime(1000,-9000,9000)", "CUTpid" && cut);
+    DATA->Draw("SiliconTime-toftdc7>>h_SiliconTime(1000,-9000,9000)", basecut && cut);
 }
 
 void PID()
@@ -17,14 +19,14 @@ void PID()
     DATA->Draw("pad1:tof>>h_PID(1000,1000,9000,1000,0,3000)", "", "colz");
 }
 
-void Ex()
+void Ex(TCut cut = "")
 {
-    DATA->Draw("Ex>>h_Ex(800,4,16)", "CUTpid && !X1flag && !U1flag && !X2flag && !U2flag && X1chisq < 0.2");
+    DATA->Draw("Ex>>h_Ex(800,4,16)", basecut && cut);
 }
 
 void X1pos(TCut cut = "")
 {
-    DATA->Draw("X1pos>>h_X1(1600,0,800)", "CUTpid" && cut);
+    DATA->Draw("X1pos>>h_X1(1600,0,800)", basecut && cut);
 }
 
 void CheckLUT()
