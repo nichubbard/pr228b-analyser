@@ -23,7 +23,7 @@
 // Root > T->Process("analysis/TDCAlign.C+")
 //
 
-#include "analysis/TDCAlign.h"
+#include "TDCAlign.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
