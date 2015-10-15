@@ -17,13 +17,22 @@ Run `make` to build, you can then move analyzer to the main directory
 
 Usage
 -----
-Basic usage: ./analyzer -i /path/to/midas.mid.gz
-Options are mostly in the configPR228b.cfg file now, however controlling
+Basic usage: `./analyzer -i /path/to/midas.mid.gz`
+
+Options are mostly in the `configPR228b.cfg` file now, however controlling
 of LUT offsets, PID gates for Histograms is still in the ODB. To change
-run `odbedit`
+run `odbedit`. You can load pr228b.odb for some sensible defaults.
 
 Analysis
 --------
 Helpful scripts are in the `analysis` folder. See the readme there for
 descriptions.
+
+Issues
+------
+Note that this code is not (always) as flexibile as it pretends to be.
+In particular although you can toggle various detectors, only MMM, W1
+and W1 with X1 are likely to work properly. Other combinations will
+either lead to crashes or not sorting all data. This will (hopefully)
+be fixed at some later date.
 
