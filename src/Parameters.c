@@ -3,6 +3,7 @@
 /*#define VERBOSE*/
 
 #include "ame.h"
+#include "config.h"
 
 
 int ADCModules;
@@ -164,8 +165,8 @@ void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there
 
 void W1NumberInit()
 {
-  W1ADCChannelLimits = new int*[NumberOfW1];
   NumberOfW1 += W1Start - 1;
+  W1ADCChannelLimits = new int*[NumberOfW1];
 
   for(int i=0;i<NumberOfW1;i++)
   {
@@ -1275,7 +1276,7 @@ void PrintParameters()
     printf(" Reaction: %s(%s,%s)%s\n", elements[1].c_str(), elements[0].c_str(), elements[2].c_str(), elements[3].c_str());
   }
   printf("-------------------------------------------------------\n");
-  printf(" VDCs: 1 is %s, 2 is %s\n",
+  printf(" VDCs: 1 is %s-type, 2 is %s-type\n",
       VDC1_new ? "new" : "old", VDC2_new ? "new" : "old");
   if (NumberOfW1 > 0 || NumberOfMMM > 0 || NumberOfX1 > 0)
   {
@@ -1301,6 +1302,30 @@ void PrintParameters()
     if (NumberOfLEPS > 0) printf("%d LEPS ", NumberOfLEPS);
     printf("\n");
   }
+  printf("-------------------------------------------------------\n");
+  printf(" ROOT branches: f-plane");
+#if defined(ENABLE_GAMMA) || defined(ENABLE_RAW) || defined(ENABLE_SILICON)
+  printf(",");
+#endif
+  printf(" ");
+#ifdef ENABLE_GAMMA
+  printf("GammaData");
+#if defined(ENABLE_RAW) || defined(ENABLE_SILICON)
+  printf(",")
+#endif
+  printf(" ");
+#endif
+#ifdef ENABLE_RAW
+  printf("RawData");
+#if defined(ENABLE_SILICON)
+  printf(",");
+#endif
+  printf(" ");
+#endif
+#ifdef ENABLE_SILICON
+  printf("SiliconData");
+#endif
+  printf("\n");
   printf("-------------------------------------------------------\n");
   printf("\n");
 }
