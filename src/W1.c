@@ -63,8 +63,6 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
 				    {
 				      double energyi = W1EnergyCalc(i,ADC_import[i]);
 				      double energyj = W1EnergyCalc(j,ADC_import[j]);
-				      if (energyi < 200 || energyi > 7500)
-					continue;
 				      //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				      //				      if(W1FrontBackTest(i,j,energyi,energyj,si) && W1ADCTDCChannelTestNSide(j,tdcBack))
 				      if(W1FrontBackTest(i,j,energyi,energyj,si))
