@@ -41,7 +41,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 				for(int nn=0;nn<ntdc;nn++){printf("Dump: \t ntdc: %d \t n: %d \t TDC_channel_import[n]: %d \t ChannelCounter[TDC_channel_import[n]]: %d \t TDC_value_import[n]: %f \n",
 						ntdc,nn,TDC_channel_import[nn],ChannelCounter[TDC_channel_import[nn]],TDC_value_import[nn]);}	
 			}
-			else if (ChannelCounter[channel] == 1 || GoodChannelCounter[channel] == 1)
+			else if (ChannelCounter[channel] == 1)
 			{
 				//The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
 				SetChannel(channel);
@@ -49,6 +49,17 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 				SetMult(ChannelCounter[channel]);
 				TDChits++;
 				//printf("\n ChannelCounter[%d]==1 \n",TDC_channel_import[n]);
+			}
+			else if (ChannelCounter[channel] > 1 && GoodChannelCounter[channel] == 1)
+			{
+				if (value > PulseLimits[0] && value < PulseLimits[1])
+				{
+					SetChannel(channel);
+					SetValue(value);
+					SetMult(ChannelCounter[channel]);
+					TDChits++;
+					ChannelCounter[channel] *= -1;
+				}
 			}
 			//       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==2
 			else if (ChannelCounter[channel] > 1 && GoodChannelCounter[channel] > 1)
