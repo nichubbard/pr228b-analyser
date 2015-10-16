@@ -18,6 +18,7 @@ CheckCalibration
 ----------------
 Check the calibration by plotting a 2D histogram of energy against
 channel.
+
 TODO: This script needs to be updated to parse the offline calibration
 file rather than having a header file (that is annoying to change
 when combining runs)
@@ -45,19 +46,26 @@ peaks found at the edges, etc. Not very flexible on its own (yet)
 Spectra
 -------
 Provides a bunch of simple ROOT macros for plotting common spectra.
+
 Ex, X1pos, SiliconTime all plot their respective TTree variables with
 sensible axes and gates (if applicable)
+
 ExSi() plots SiliconEnergy against Ex, again with sensibile axes.
+
 PID() plots pad1vstof for PID gating.
+
 CheckLut() plots res1:res0 for X1,U1,X2,U2 for verifying LUT offsets.
 See the K600 manual for information.
+
 ExSi, SiliconTime, X1pos, Ex all implicitly have a cut on CUTpid so make
 sure a CUTpid is loaded (see the CUT\*.C macros)
+
 ExSi, SiliconTime, X1pos take an optional argument of additional cuts
 to include
 
 TDCAlign
 --------
 Aligns silicon TDC channels so the maximum peak value is at the same value on each channel
+
 TODO: Align to a fixed reference point (rather than to TDC0)
 
