@@ -384,11 +384,6 @@ void TDCAlign::Init(TTree *tree)
    fChain->SetBranchAddress("EnergyFront", &EnergyFront, &b_SiliconInfo_EnergyFront);
    fChain->SetBranchAddress("EnergyBack", &EnergyBack, &b_SiliconInfo_EnergyBack);
    fChain->SetBranchAddress("TDCChannelMultiplicity", &TDCChannelMultiplicity, &b_SiliconInfo_TDCChannelMultiplicity);
-   fChain->SetBranchAddress("ADCValues", &ADCValues, &b_RawInfo_ADCValues);
-   fChain->SetBranchAddress("TDCChannels", &TDCChannels, &b_RawInfo_TDCChannels);
-   fChain->SetBranchAddress("TDCValues", &TDCValues, &b_RawInfo_TDCValues);
-   fChain->SetBranchAddress("ADCCalibratedValues", &ADCCalibratedValues, &b_RawInfo_ADCCalibratedValues);
-   fChain->SetBranchAddress("QDCValues", &QDCValues, &b_RawInfo_QDCValues);
 }
 
 Bool_t TDCAlign::Notify()
