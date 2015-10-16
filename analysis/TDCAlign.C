@@ -59,7 +59,7 @@ void TDCAlign::Begin(TTree * /*tree*/)
 		buf << "tdc" << i;
 		tdc[i] = new TH1F(buf.str().c_str(), "", h_bins, h_start, h_end);
 	}
-	TFile* f = TFile::Open("CUTpid1098.root", "OLD");
+	TFile* f = TFile::Open("CUTpid126.root", "OLD");
 	CUTpid = (TCutG*)f->Get("CUTpid");
 	f->Close();
 }
@@ -104,7 +104,9 @@ Bool_t TDCAlign::Process(Long64_t entry)
 	{
 		if (TDCChannelFront[i] >= channel_start && TDCChannelFront[i] < channel_end)
 		{
-			tdc[TDCChannelFront[i] - channel_start]->Fill(TDCValueFront[i] - tof);
+			tdc[TDCChannelFront[i] - channel_start]->Fill(
+					(int)abs(TDCValueFront[i] - tof) % 2675
+			);
 		}
 	}
 
@@ -126,14 +128,14 @@ void TDCAlign::Terminate()
 	// the results graphically or save the results to file.
 	int bin0 = tdc[0]->GetMaximumBin();
 	ofstream output;
-	output.open("../analysis/TDCAlignPR228B.dat");
+	output.open("../../output/TDCAlignPR228B.dat");
 	using std::endl;
 	output << channel_start << " " << 0 << endl;
 	TCanvas* c1 = new TCanvas("silicon times");
 	for (size_t i = 1; i < channels; ++i)
 	{
 		tdc[i]->Draw();
-		c1->SaveAs("../analysis/align/TDCChannel" + TString::LLtoa(i, 10) + ".png");
+		c1->SaveAs("../../output/align/TDCChannel" + TString::LLtoa(i, 10) + ".png");
 		int bin = tdc[i]->GetMaximumBin();
 		int offset = bin - bin0;
 		output << i + channel_start << " " << offset << endl;

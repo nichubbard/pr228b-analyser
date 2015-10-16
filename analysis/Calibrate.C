@@ -284,7 +284,7 @@ void Calibrate::Terminate()
         if (save_graphs)
         {
             data[i].Histogram->Draw("");
-            c1->Print("../analysis/calibration/ADCChannel" + TString::LLtoa(i, 10) + ".png",
+            c1->Print("../../output/calibration/ADCChannel" + TString::LLtoa(i, 10) + ".png",
                     "png");
         }
 
@@ -369,7 +369,7 @@ void Calibrate::Terminate()
 
         if (save_graphs)
         {
-            c1->Print("../analysis/calibration/GaussChannel" + TString::LLtoa(i, 10) + ".png",
+            c1->Print("../../output/calibration/GaussChannel" + TString::LLtoa(i, 10) + ".png",
                 "png");
         }
 
@@ -425,7 +425,7 @@ void Calibrate::Terminate()
         gr->Fit("fit", "FBQ");
         if (save_graphs)
         {
-            c1->Print("../analysis/calibration/LinearChannel" + TString::LLtoa(i, 10) + ".png",
+            c1->Print("../../output/calibration/LinearChannel" + TString::LLtoa(i, 10) + ".png",
                 "png");
         }
         if (use_deadlayer)
@@ -448,7 +448,7 @@ void Calibrate::Terminate()
 
     cout << "Creating C file" << endl;
     std::ofstream output;
-    output.open("../analysis/SiliconParameters.c");
+    output.open("../../output/SiliconParameters.c");
 
     output << "double SiliconOffset[" << channels << "] = { ";
     for (int i = 0; i < channels; ++i)
@@ -482,7 +482,7 @@ void Calibrate::Terminate()
         }
     }
 
-    output.open("../analysis/Silicon.csv");
+    output.open("../../output/Silicon.csv");
     output << "Channel,Gain,Offset,DeadLayer" << endl;
     for (int i = 0; i < channels; ++i)
     {
@@ -490,7 +490,7 @@ void Calibrate::Terminate()
     }
     output.close();
 
-    output.open("../analysis/CalibParsPR228.dat");
+    output.open("../../output/CalibParsPR228.dat");
     for (int i = 0; i < channels; ++i)
     {
         output << i << " " << data[i].Gain << " " << data[i].Offset << endl;

@@ -106,12 +106,12 @@ void Pedestals::Terminate()
    // the results graphically or save the results to file.
 
    ofstream output;
-   output.open("../analysis/PedestalsPR228B.dat");
+   output.open("../../output/PedestalsPR228B.dat");
    TCanvas* c1 = new TCanvas("ADC Pedestals");
    for (size_t i = 0; i < channels; ++i)
    {
       adcs[i]->Draw();
-      c1->SaveAs("../analysis/pedestals/ADCChannel" + TString::LLtoa(i, 10) + ".png");
+      c1->SaveAs("../../output/pedestals/ADCChannel" + TString::LLtoa(i, 10) + ".png");
       int maxBin = adcs[i]->GetMaximumBin();
       int highBin;
       for (highBin = maxBin; highBin < adcs[i]->GetNbinsX(); ++highBin)
