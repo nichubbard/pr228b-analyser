@@ -96,16 +96,20 @@ Bool_t TDCAlign::Process(Long64_t entry)
 	b_t_tof->GetEntry(entry);
 	b_SiliconInfo_TDCChannelFront->GetEntry(entry);
 	b_SiliconInfo_TDCValueFront->GetEntry(entry);
+	b_SiliconInfo_SiliconEnergy->GetEntry(entry);
 	b_t_pad1->GetEntry(entry);
 
 	if (!CUTpid->IsInside(tof, pad1))
 		return kTRUE;
 	for (size_t i = 0; i < TDCChannelFront.size(); ++i)
 	{
+		if (SiliconEnergy[i] < 200)
+			continue;
 		if (TDCChannelFront[i] >= channel_start && TDCChannelFront[i] < channel_end)
 		{
 			tdc[TDCChannelFront[i] - channel_start]->Fill(
-					(int)abs(TDCValueFront[i] - tof) % 2675
+					//(int)abs(TDCValueFront[i] - tof) % 2675
+					TDCValueFront[i] - tof
 			);
 		}
 	}
