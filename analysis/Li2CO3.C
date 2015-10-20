@@ -43,8 +43,8 @@ using std::size_t;
  *static const int tdc_gate_right = -1200;
  */
 
-static const int tdc_gate_left = 1200;
-static const int tdc_gate_right = 2000;
+static const int tdc_gate_left = -2500;
+static const int tdc_gate_right = -1200;
 
 static const double x1_oxygen_left = 6.0;
 static const double x1_oxygen_right = 6.2;
@@ -73,7 +73,7 @@ void Li2CO3::Begin(TTree * /*tree*/)
     TFile* cutx1 = new TFile("CUTX1tof1098.root", "OLD");
     CUTpid = (TCutG*)cutfile->Get("CUTpid");
     CUTX1tof = 0;
-    CUTX1tof = (TCutG*)cutx1->Get("CUTX1tof");
+    //CUTX1tof = (TCutG*)cutx1->Get("CUTX1tof");
 
     if (fInput)
     {
@@ -93,7 +93,7 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
     TString option = GetOption();
 
     spectrometer = new TH1F("spectrometer", "", 800, 4, 16);
-    silicontime = new TH1F("silicontime", "", 1500, 0, 4500);
+    silicontime = new TH1F("silicontime", "", 1500, -4500, 4500);
     raw = new TH2F("raw", "", 800, 4, 16, 1000, 0, 10000);
     gated = new TH2F("gated", "", 800, 4, 16, 1000, 0, 10000);
     gated_coinc = new TH2F("gated_coinc", "", 800, 4, 16, 1000, 0, 10000);
@@ -228,16 +228,17 @@ Bool_t Li2CO3::Process(Long64_t entry)
     for (size_t i = 0; i < DetectorHit.size(); ++i)
     {
         stats_si_total++;
-        if (SiliconEnergy[i] < 150)
+        if (SiliconEnergy[i] < 200)
         {
             stats_si_energy_rejected++;
             continue;
         }
         raw->Fill(Ex, SiliconEnergy[i]);
-        int time = (int)abs(SiliconTime[i] - tof) % 2675;
+        //int time = (int)abs(SiliconTime[i] - tof) % 2675;
+        int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
-        if(time >= tdc_gate_left && time <= tdc_gate_right)
-        //if (true)
+        //if(time >= tdc_gate_left && time <= tdc_gate_right)
+        if (true)
         {
             filteredDhit.push_back(DetectorHit[i]);
             filteredE.push_back(SiliconEnergy[i]);
@@ -261,11 +262,23 @@ Bool_t Li2CO3::Process(Long64_t entry)
         return kTRUE;
     }
 
+    std::vector<int> hpd(8);
+
     for (size_t i = 0; i < filteredE.size(); ++i)
     {
         gated->Fill(Ex, filteredE[i]);
+        hpd[filteredDhit[i]-1] += 1;
     }
-    mpcty->Fill(Ex, filteredDhit.size());
+    int dets = 0;
+    for (size_t i = 0; i < hpd.size(); ++i)
+    {
+        if (hpd[i]) {
+            dets++;
+        }
+    }
+
+    //mpcty->Fill(Ex, filteredDhit.size());
+    mpcty->Fill(Ex, dets);
 
     if (filteredE.size() >= 2 && filteredE.size() < 20)
     {
