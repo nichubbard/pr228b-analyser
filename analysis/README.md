@@ -1,6 +1,36 @@
 PR228B Analysis Scripts
 ========================
 
+New Config System
+-----------------
+A new config system is being set up, see analysis.cfg
+
+It provides a simple text-file for changing settings and files for the
+analysis scripts, skipping having to modify (possibly numerous) various
+C and H files. Currently only the following actually use this new file:
+
+runs
+----
+Loads a TChain of runs into ROOT. The runs come from the config file
+(see property `Runs`). If `UsePROOF` is yes, this also starts PROOF on the
+chain, to speed up processing big chains. The following variables are
+created
+
+* `chain` - The `TChain` of all runs
+* `DATA` - A `TTree*` for compatability with single run files - by
+    always using `DATA` the same macros/lines work for the chain or
+    for single runs.
+* `proof` - A `TProof*` pointing to the PROOF instance created. Will be
+    `nullptr` if `UsePROOF` was no.
+
+Old Scripts
+-----------
+Below are scripts that do not use the new config system because they
+have not been updated or because it's not applicable. Eventually once
+all applicable scripts are updated this section will be changed to focus
+on scripts that don't use the config system, for whatever reason.
+
+
 Calibrate
 ---------
 Calibrate silicon (for 228Th currently). Generates an offline
