@@ -46,8 +46,8 @@ using std::size_t;
  *static const int tdc_gate_right = -1200;
  */
 
-static const int tdc_gate_left = -2500;
-static const int tdc_gate_right = -1200;
+static const int tdc_gate_left = -200;
+static const int tdc_gate_right = 500;
 
 static const double x1_oxygen_left = 6.0;
 static const double x1_oxygen_right = 6.2;
@@ -100,7 +100,7 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
     raw = new TH2F("raw", "", 800, 4, 16, 1000, 0, 10000);
     gated = new TH2F("gated", "", 800, 4, 16, 1000, 0, 10000);
     gated_coinc = new TH2F("gated_coinc", "", 800, 4, 16, 1000, 0, 10000);
-    mpcty = new TH2F("multiplicity", "", 800, 4, 16, 160, 0, 160);
+    mpcty = new TH2F("multiplicity", "", 800, 4, 16, 224, 0, 224);
     fOutput->Add(spectrometer);
     fOutput->Add(silicontime);
     fOutput->Add(raw);
@@ -205,11 +205,6 @@ Bool_t Li2CO3::Process(Long64_t entry)
         stats_pid2++;
         return kTRUE;
     }
-    if (pad2 < 57 || pad2 > 59)
-    {
-        //stats_pid2++;
-        //return kTRUE;
-    }
     if (Y1 < -10 || Y1 > 15)
     {
         stats_y1++;
@@ -240,8 +235,8 @@ Bool_t Li2CO3::Process(Long64_t entry)
         //int time = (int)abs(SiliconTime[i] - tof) % 2675;
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
-        //if(time >= tdc_gate_left && time <= tdc_gate_right)
-        if (true)
+        if(time >= tdc_gate_left && time <= tdc_gate_right)
+        //if (true)
         {
             filteredDhit.push_back(DetectorHit[i]);
             filteredE.push_back(SiliconEnergy[i]);
@@ -280,10 +275,10 @@ Bool_t Li2CO3::Process(Long64_t entry)
         }
     }
 
-    //mpcty->Fill(Ex, filteredDhit.size());
-    mpcty->Fill(Ex, dets);
+    mpcty->Fill(Ex, filteredDhit.size());
+    //mpcty->Fill(Ex, dets);
 
-    if (filteredE.size() >= 2 && filteredE.size() < 20)
+    if (filteredE.size() >= 2)// && filteredE.size() < 20)
     {
         for (size_t i = 0; i < filteredE.size(); ++i)
         {

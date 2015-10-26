@@ -59,7 +59,7 @@ void TDCAlign::Begin(TTree * /*tree*/)
 		buf << "tdc" << i;
 		tdc[i] = new TH1F(buf.str().c_str(), "", h_bins, h_start, h_end);
 	}
-	TFile* f = TFile::Open("CUTpid126.root", "OLD");
+	TFile* f = TFile::Open("CUTpid1098.root", "OLD");
 	CUTpid = (TCutG*)f->Get("CUTpid");
 	f->Close();
 }
@@ -130,17 +130,18 @@ void TDCAlign::Terminate()
 	// The Terminate() function is the last function to be called during
 	// a query. It always runs on the client, it can be used to present
 	// the results graphically or save the results to file.
-	int bin0 = tdc[0]->GetMaximumBin();
+	int bin0 = 0;
+	std::cout << "Alignment bin is: " << bin0 << std::endl;
 	ofstream output;
 	output.open("../../output/TDCAlignPR228B.dat");
 	using std::endl;
-	output << channel_start << " " << 0 << endl;
 	TCanvas* c1 = new TCanvas("silicon times");
-	for (size_t i = 1; i < channels; ++i)
+	for (size_t i = 0; i < channels; ++i)
 	{
 		tdc[i]->Draw();
 		c1->SaveAs("../../output/align/TDCChannel" + TString::LLtoa(i, 10) + ".png");
 		int bin = tdc[i]->GetMaximumBin();
+		bin = tdc[i]->GetXaxis()->GetBinCenter(bin);
 		int offset = bin - bin0;
 		output << i + channel_start << " " << offset << endl;
 	}
