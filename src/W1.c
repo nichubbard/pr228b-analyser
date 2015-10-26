@@ -186,8 +186,8 @@ bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, doub
 	  //printf("Test condition: %f\n",diff/(0.5*(FrontEnergy+BackEnergy)));
 	  //if(diff==0)result=true;
 	  if(diff<0)diff*=-1;
-	  /*if(result==false && diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal*/
-	  if (std::abs(diff) < 3*sigma)
+	  if(result==false && diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal
+	  /*if (std::abs(diff) < 3*sigma)*/
 	    {
 	      //printf("Test162\n");
 	      result = true;//They are -> it's a good event
