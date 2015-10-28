@@ -46,8 +46,8 @@ using std::size_t;
  *static const int tdc_gate_right = -1200;
  */
 
-static const int tdc_gate_left = -200;
-static const int tdc_gate_right = 500;
+static const int tdc_gate_left = -150;
+static const int tdc_gate_right = 150;
 
 static const double x1_oxygen_left = 6.0;
 static const double x1_oxygen_right = 6.2;
@@ -72,8 +72,8 @@ void Li2CO3::Begin(TTree * /*tree*/)
     // The tree argument is deprecated (on PROOF 0 is passed).
 
     TString option = GetOption();
-    TFile* cutfile = new TFile("CUTpid1098.root", "OLD");
-    TFile* cutx1 = new TFile("CUTX1tof1098.root", "OLD");
+    TFile* cutfile = new TFile("CUTpid126.root", "OLD");
+    //TFile* cutx1 = new TFile("CUTX1tof1098.root", "OLD");
     CUTpid = (TCutG*)cutfile->Get("CUTpid");
     CUTX1tof = 0;
     //CUTX1tof = (TCutG*)cutx1->Get("CUTX1tof");
@@ -84,7 +84,7 @@ void Li2CO3::Begin(TTree * /*tree*/)
         fInput->Add(CUTX1tof);
     }
     delete cutfile;
-    delete cutx1;
+    //delete cutx1;
 }
 
 void Li2CO3::SlaveBegin(TTree * /*tree*/)
@@ -226,12 +226,12 @@ Bool_t Li2CO3::Process(Long64_t entry)
     for (size_t i = 0; i < DetectorHit.size(); ++i)
     {
         stats_si_total++;
-        if (SiliconEnergy[i] < 200)
+        raw->Fill(Ex, SiliconEnergy[i]);
+        if (SiliconEnergy[i] < 150)
         {
             stats_si_energy_rejected++;
             continue;
         }
-        raw->Fill(Ex, SiliconEnergy[i]);
         //int time = (int)abs(SiliconTime[i] - tof) % 2675;
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
