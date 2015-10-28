@@ -59,7 +59,7 @@ void TDCAlign::Begin(TTree * /*tree*/)
 		buf << "tdc" << i;
 		tdc[i] = new TH1F(buf.str().c_str(), "", h_bins, h_start, h_end);
 	}
-	TFile* f = TFile::Open("CUTpid1098.root", "OLD");
+	TFile* f = TFile::Open("CUTpid126.root", "OLD");
 	CUTpid = (TCutG*)f->Get("CUTpid");
 	f->Close();
 }
