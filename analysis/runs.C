@@ -20,9 +20,20 @@ void runs()
       proof = TProof::Open("lite://");
       chain.SetProof();
    }
-   //proof->Load("load_cuts.C,CUTalphas.root,CUTalphastate4.root,CUTalphastate5.root,CUTepair.root,CUTpid.root,CUTli.root");
-   //proof->Exec("load_cuts()");
-   //load_cuts();
+   if (config.UsePID())
+   {
+      std::string pid = config.PIDfile() + ".C";
+      if (config.UsePROOF())
+      {
+         proof->Load(pid.c_str());
+         proof->Exec("delete c1");
+      }
+      else
+      {
+         gROOT->LoadMacro(pid.c_str());
+      }
+      delete gDirectory->FindObject("c1");
+   }
 
    DATA = &chain;
 }
