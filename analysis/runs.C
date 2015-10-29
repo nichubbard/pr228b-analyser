@@ -19,6 +19,7 @@ void runs()
    {
       proof = TProof::Open("lite://");
       chain.SetProof();
+      proof->Load("config.cpp+");
    }
    if (config.UsePID())
    {

@@ -28,6 +28,14 @@ class Li2CO3 : public TSelector {
         // Input data (from client)
         TCutG* CUTpid;
         TCutG* CUTX1tof;
+        int tdc_gate_left;
+        int tdc_gate_right;
+        double x1_oxygen_left;
+        double x1_oxygen_right;
+        double x1_oxygen_top;
+        double x1_oxygen_bottom;
+        double x1_background_l;
+        double x1_background_r;
 
         // Output data
         TH1F* spectrometer;

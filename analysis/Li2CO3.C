@@ -41,50 +41,69 @@
 
 using std::size_t;
 
-/*
- *static const int tdc_gate_left = -1600;
- *static const int tdc_gate_right = -1200;
- */
-
-static const int tdc_gate_left = -150;
-static const int tdc_gate_right = 150;
-
-static const double x1_oxygen_left = 6.0;
-static const double x1_oxygen_right = 6.2;
-static const double x1_oxygen_top = 1700;
-static const double x1_oxygen_bottom = 0;
-static const double x1_background_l = 5.8;
-static const double x1_background_r = 6.4;
-
-/*
- *static const double x1_oxygen_left = 11.95;
- *static const double x1_oxygen_right = 12.15;
- *static const double x1_oxygen_top = 3100;
- *static const double x1_oxygen_bottom = 2400;
- *static const double x1_background_l = 11.8;
- *static const double x1_background_r = 12.3;
- */
-
 void Li2CO3::Begin(TTree * /*tree*/)
 {
     // The Begin() function is called at the start of the query.
     // When running with PROOF Begin() is only called on the client.
     // The tree argument is deprecated (on PROOF 0 is passed).
+    //
+    AnalysisConfig& config = AnalysisConfig::Instance();
 
-    TString option = GetOption();
-    TFile* cutfile = new TFile("CUTpid126.root", "OLD");
-    //TFile* cutx1 = new TFile("CUTX1tof1098.root", "OLD");
-    CUTpid = (TCutG*)cutfile->Get("CUTpid");
+    tdc_gate_left = config.TDCGateLeft();
+    tdc_gate_right = config.TDCGateRight();
+    x1_oxygen_left = config.ExOxygenLeft();
+    x1_oxygen_right = config.ExOxygenRight();
+    x1_oxygen_top = config.ExOxygenTop();
+    x1_oxygen_bottom = config.ExOxygenBottom();
+    x1_background_l = config.ExOxygenBackgroundLeft();
+    x1_background_r = config.ExOxygenBackgroundRight();
+
+    CUTpid = 0;
     CUTX1tof = 0;
-    //CUTX1tof = (TCutG*)cutx1->Get("CUTX1tof");
+    if (config.UsePID())
+    {
+        TFile* pidfile = new TFile(config.PIDfile() + TString(".root"), "OLD");
+        CUTpid = (TCutG*)pidfile->Get("CUTpid");
+        delete pidfile;
+    }
+    if (config.UseX1tofPID())
+    {
+        TFile* pidfile = new TFile(
+                config.X1tofPIDfile() + TString(".root"), "OLD"
+        );
+        CUTX1tof = (TCutG*)pidfile->Get("CUTX1tof");
+        delete pidfile;
+    }
 
     if (fInput)
     {
         fInput->Add(CUTpid);
         fInput->Add(CUTX1tof);
+        fInput->Add(
+                new TParameter<int>("tdc_gate_left", tdc_gate_left)
+        );
+        fInput->Add(
+                new TParameter<int>("tdc_gate_right", tdc_gate_right)
+        );
+        fInput->Add(
+                new TParameter<int>("x1_oxygen_left", x1_oxygen_left)
+        );
+        fInput->Add(
+                new TParameter<int>("x1_oxygen_right", x1_oxygen_right)
+        );
+        fInput->Add(
+                new TParameter<int>("x1_oxygen_top", x1_oxygen_top)
+        );
+        fInput->Add(
+                new TParameter<int>("x1_oxygen_bottom", x1_oxygen_bottom)
+        );
+        fInput->Add(
+                new TParameter<int>("x1_background_l", x1_background_l)
+        );
+        fInput->Add(
+                new TParameter<int>("x1_background_r", x1_background_r)
+        );
     }
-    delete cutfile;
-    //delete cutx1;
 }
 
 void Li2CO3::SlaveBegin(TTree * /*tree*/)
@@ -110,6 +129,14 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
 
     if (fInput)
     {
+        tdc_gate_left = ((TParameter<int>*)fInput->FindObject("tdc_gate_left"))->GetVal();
+        tdc_gate_right = ((TParameter<int>*)fInput->FindObject("tdc_gate_right"))->GetVal();
+        x1_oxygen_left = ((TParameter<int>*)fInput->FindObject("x1_oxygen_left"))->GetVal();
+        x1_oxygen_right = ((TParameter<int>*)fInput->FindObject("x1_oxygen_right"))->GetVal();
+        x1_oxygen_top = ((TParameter<int>*)fInput->FindObject("x1_oxygen_top"))->GetVal();
+        x1_oxygen_bottom = ((TParameter<int>*)fInput->FindObject("x1_oxygen_bottom"))->GetVal();
+        x1_background_l = ((TParameter<int>*)fInput->FindObject("x1_background_l"))->GetVal();
+        x1_background_r = ((TParameter<int>*)fInput->FindObject("x1_background_r"))->GetVal();
         CUTpid = (TCutG*)fInput->FindObject("CUTpid");
         CUTX1tof = (TCutG*)fInput->FindObject("CUTX1tof");
     }
@@ -195,7 +222,7 @@ Bool_t Li2CO3::Process(Long64_t entry)
         stats_u2_flag++;
         return kTRUE;
     }
-    if (!CUTpid->IsInside(tof, pad1))
+    if (CUTpid && !CUTpid->IsInside(tof, pad1))
     {
         stats_pid++;
         return kTRUE;
