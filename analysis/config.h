@@ -7,8 +7,7 @@
 class AnalysisConfig
 {
    public:
-      AnalysisConfig();
-      ~AnalysisConfig();
+      static AnalysisConfig& Instance();
 
       std::vector<int> Runs() const;
       bool UsePROOF() const;
@@ -42,7 +41,15 @@ class AnalysisConfig
       double ExCarbonBackgroundRight() const;
 
       double PairEfficiency() const;
+
    private:
+      static AnalysisConfig* instance;
+
+      AnalysisConfig();
+      ~AnalysisConfig();
+
+      AnalysisConfig(const AnalysisConfig& rhs);
+      AnalysisConfig& operator=(const AnalysisConfig& rhs);
 
       std::vector<int> runs;
       bool usePROOF;
@@ -71,6 +78,26 @@ class AnalysisConfig
       double pairEfficiency;
 };
 
+inline AnalysisConfig::AnalysisConfig(AnalysisConfig const& rhs)
+{
+   instance = rhs.instance;
+}
+
+inline AnalysisConfig& AnalysisConfig::operator=(AnalysisConfig const& rhs)
+{
+   if (this != &rhs)
+   {
+      instance = rhs.instance;
+   }
+   return *this;
+}
+
+inline AnalysisConfig& AnalysisConfig::Instance()
+{
+   static AnalysisConfig theInstance;
+   instance = &theInstance;
+   return *instance;
+}
 
 inline std::vector<int> AnalysisConfig::Runs() const
 {

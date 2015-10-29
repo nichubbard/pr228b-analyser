@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+AnalysisConfig* AnalysisConfig::instance = nullptr;
+
 static bool get_bool(std::string value)
 {
    std::transform(value.begin(), value.end(), value.begin(), ::tolower);

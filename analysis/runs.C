@@ -6,7 +6,7 @@ TTree* DATA;
 
 void runs()
 {
-   AnalysisConfig config;
+   AnalysisConfig& config = AnalysisConfig::Instance();
 
    for (auto i : config.Runs())
    {
