@@ -151,7 +151,7 @@ inline int AnalysisConfig::TDCGateLeft() const
 
 inline int AnalysisConfig::TDCGateRight() const
 {
-   return tdcGateLeft;
+   return tdcGateRight;
 }
 
 inline double AnalysisConfig::ExOxygenLeft() const
@@ -181,7 +181,7 @@ inline double AnalysisConfig::ExOxygenBackgroundLeft() const
 
 inline double AnalysisConfig::ExOxygenBackgroundRight() const
 {
-   return exOxygenRight;
+   return exOxygenBackgroundRight;
 }
 
 inline double AnalysisConfig::OxygenDoublePeakRatio() const

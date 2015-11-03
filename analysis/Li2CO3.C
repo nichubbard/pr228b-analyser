@@ -70,7 +70,7 @@ void Li2CO3::Begin(TTree * /*tree*/)
     {
         TFile* pidfile = new TFile(
                 config.X1tofPIDfile() + TString(".root"), "OLD"
-        );
+                );
         CUTX1tof = (TCutG*)pidfile->Get("CUTX1tof");
         delete pidfile;
     }
@@ -81,28 +81,28 @@ void Li2CO3::Begin(TTree * /*tree*/)
         fInput->Add(CUTX1tof);
         fInput->Add(
                 new TParameter<int>("tdc_gate_left", tdc_gate_left)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("tdc_gate_right", tdc_gate_right)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("x1_oxygen_left", x1_oxygen_left)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("x1_oxygen_right", x1_oxygen_right)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("x1_oxygen_top", x1_oxygen_top)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("x1_oxygen_bottom", x1_oxygen_bottom)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("x1_background_l", x1_background_l)
-        );
+                );
         fInput->Add(
                 new TParameter<int>("x1_background_r", x1_background_r)
-        );
+                );
     }
 }
 
@@ -263,7 +263,7 @@ Bool_t Li2CO3::Process(Long64_t entry)
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
         if(time >= tdc_gate_left && time <= tdc_gate_right)
-        //if (true)
+            //if (true)
         {
             filteredDhit.push_back(DetectorHit[i]);
             filteredE.push_back(SiliconEnergy[i]);
@@ -507,17 +507,45 @@ void Li2CO3::Terminate()
     cout << "----------------------------------------------" << endl;
 
     csp->cd();
-    TF1* specfit = new TF1("specfit", "gaus");
-    spectrometer->Fit("specfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
-    double a = specfit->GetParameter(0);
-    double mu = specfit->GetParameter(1);
-    double sigma = specfit->GetParameter(2);
-    delete specfit;
-    specfit = new TF1("specfit", "gaus(0)+pol1(3)");
-    specfit->SetParameter(0, a);
-    specfit->SetParameter(1, mu);
-    specfit->SetParameter(2, sigma);
-    spectrometer->Fit("specfit", "QLM", "", x1_background_l, x1_background_r);
+    //TF1* specfit = new TF1("specfit", "gaus");
+    //spectrometer->Fit("specfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
+    //double a = specfit->GetParameter(0);
+    //double mu = specfit->GetParameter(1);
+    //double sigma = specfit->GetParameter(2);
+    //delete specfit;
+    //specfit = new TF1("specfit", "gaus(0)+pol1(3)");
+    //specfit->SetParameter(0, a);
+    //specfit->SetParameter(1, mu);
+    //specfit->SetParameter(2, sigma);
+    //spectrometer->Fit("specfit", "QLM", "", x1_background_l, x1_background_r);
+    TF1* specfit = new TF1("specfit", "[0]*exp(-0.5*((x-[1])/[2])**2)/(sqrt(2*pi)*[2])+[3]*exp(-0.5*((x-[4])/[2])**2)/(sqrt(2*pi)*[2])+pol1(5)");
+    specfit->GetFormula()->Compile();
+    specfit->SetParameter(0, 5);
+    specfit->SetParameter(1, 6.049);
+    specfit->SetParameter(2, 0.02);
+    specfit->SetParameter(3, 15);
+    specfit->SetParameter(4, 6.129);
+    specfit->SetParameter(5, 400);
+    specfit->SetParameter(6, 0);
+    spectrometer->Fit(specfit, "FQMN", "", x1_background_l, x1_background_r);
+
+    TF1* specfit2 = new TF1("fit_first_gaussian", "gausn(0)+pol1(3)");
+    specfit2->FixParameter(0, specfit->GetParameter(0));
+    specfit2->FixParameter(1, specfit->GetParameter(1));
+    specfit2->FixParameter(2, specfit->GetParameter(2));
+    specfit2->FixParameter(3, specfit->GetParameter(5));
+    specfit2->FixParameter(4, specfit->GetParameter(6));
+    specfit2->SetLineColor(kRed);
+    spectrometer->Fit(specfit2, "QFM", "", x1_background_l, x1_background_r);
+
+    TF1* specfit3 = new TF1("specfit_second_gaussian", "gausn(0)+pol1(3)");
+    specfit3->FixParameter(0, specfit->GetParameter(3));
+    specfit3->FixParameter(1, specfit->GetParameter(4));
+    specfit3->FixParameter(2, specfit->GetParameter(2));
+    specfit3->FixParameter(3, specfit->GetParameter(5));
+    specfit3->FixParameter(4, specfit->GetParameter(6));
+    specfit3->SetLineColor(kBlack);
+    spectrometer->Fit(specfit3, "QFM+", "", x1_background_l, x1_background_r);
 
     TCanvas* cgatedpx = new TCanvas("cgatedpx", "Gated Projection X");
     double firstx = gated->GetYaxis()->FindBin(x1_oxygen_bottom);
@@ -526,15 +554,15 @@ void Li2CO3::Terminate()
     gated_px->GetYaxis()->SetTitle("Counts");
     TF1* gatedfit = new TF1("gatedfit", "gaus");
     gated_px->Fit("gatedfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
-    a = gatedfit->GetParameter(0);
-    mu = gatedfit->GetParameter(1);
-    sigma = gatedfit->GetParameter(2);
+    double a = gatedfit->GetParameter(0);
+    double mu = gatedfit->GetParameter(1);
+    double sigma = gatedfit->GetParameter(2);
     delete gatedfit;
     gatedfit = new TF1("gatedfit", "gaus(0)+pol1(3)");
     gatedfit->SetParameter(0, a);
     gatedfit->SetParameter(1, mu);
     gatedfit->SetParameter(2, sigma);
-    gated_px->Fit("gatedfit", "QLM", "", x1_background_l, x1_background_r);
+    gated_px->Fit("gatedfit", "QM", "", x1_background_l, x1_background_r);
     gated_px->Draw();
 
     TCanvas* ccoincpx = new TCanvas("ccoincpx", "Coincidence Projection X");
@@ -543,7 +571,7 @@ void Li2CO3::Terminate()
     TH1D* coinc_px = gated_coinc->ProjectionX("_px", firstx, lastx);
     coinc_px->GetYaxis()->SetTitle("Counts");
     TF1* coincfit = new TF1("coincfit", "gaus");
-    coinc_px->Fit("coincfit", "QLN", "", x1_oxygen_left, x1_oxygen_right);
+    coinc_px->Fit("coincfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
     a = coincfit->GetParameter(0);
     mu = coincfit->GetParameter(1);
     sigma = coincfit->GetParameter(2);
@@ -552,13 +580,13 @@ void Li2CO3::Terminate()
     coincfit->SetParameter(0, a);
     coincfit->SetParameter(1, mu);
     coincfit->SetParameter(2, sigma);
-    coinc_px->Fit("coincfit", "QLM", "", x1_background_l, x1_background_r);
+    coinc_px->Fit("coincfit", "QM", "", x1_background_l, x1_background_r);
 
     coinc_px->Draw();
 
     TF1* specbg = new TF1("specbg", "pol1");
-    specbg->FixParameter(0, specfit->GetParameter(3));
-    specbg->FixParameter(1, specfit->GetParameter(4));
+    specbg->FixParameter(0, specfit->GetParameter(5));
+    specbg->FixParameter(1, specfit->GetParameter(6));
     csp->cd();
     specbg->SetLineColor(kGreen);
     spectrometer->Fit("specbg", "QF+", "", x1_background_l, x1_background_r);
@@ -575,23 +603,14 @@ void Li2CO3::Terminate()
     coincbg->SetLineColor(kGreen);
     coinc_px->Fit("coincbg", "QF+", "", x1_background_l, x1_background_r);
 
-    TF1* specpeak = new TF1("specpeak", "gaus");
-    specpeak->SetParameter(0, specfit->GetParameter(0));
-    specpeak->SetParameter(1, specfit->GetParameter(1));
-    specpeak->SetParameter(2, specfit->GetParameter(2));
-    TF1* gatedpeak = new TF1("gatedpeak", "gaus");
-    gatedpeak->SetParameter(0, gatedfit->GetParameter(0));
-    gatedpeak->SetParameter(1, gatedfit->GetParameter(1));
-    gatedpeak->SetParameter(2, gatedfit->GetParameter(2));
-    TF1* coincpeak = new TF1("coincpeak", "gaus");
-    coincpeak->SetParameter(0, coincfit->GetParameter(0));
-    coincpeak->SetParameter(1, coincfit->GetParameter(1));
-    coincpeak->SetParameter(2, coincfit->GetParameter(2));
-
     int binLeft = spectrometer->GetXaxis()->FindBin(x1_oxygen_left);
     int binRight = spectrometer->GetXaxis()->FindBin(x1_oxygen_right);
-    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right) / spectrometer->GetBinWidth(binLeft) *  0.259295;
-    double spec_i = spectrometer->Integral(binLeft, binRight) * 0.259295;
+    double zeroplus = specfit->GetParameter(0);
+    double threeminus = specfit->GetParameter(3);
+    double spec_r = zeroplus / (zeroplus + threeminus);
+
+    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right) / spectrometer->GetBinWidth(binLeft) * spec_r;
+    double spec_i = spectrometer->Integral(binLeft, binRight) * spec_r;
     double spec_p = spec_i - spec_b;
     double gated_b = gatedbg->Integral(x1_oxygen_left, x1_oxygen_right) / gated_px->GetBinWidth(binLeft);
     double gated_i = gated_px->Integral(binLeft, binRight);
@@ -604,6 +623,7 @@ void Li2CO3::Terminate()
     cout << "============== PEAK STATISTICS ===============" << endl;
     cout.setf(cout.fixed, cout.floatfield);
     cout << setprecision(2);
+    cout << "0+ to 3- Ratio           : " << setw(8) << spec_r << endl;
     cout << "Total spectrometer counts: " << setw(8) << spec_i << endl;
     cout << "Spectrometer background  : " << setw(8) << spec_b << endl;
     cout << "Spectrometer peak        : " << setw(8) << spec_p
@@ -622,8 +642,5 @@ void Li2CO3::Terminate()
     cout << "Double efficiency        : " << setw(8) <<
         (coinc_p * 100.0 / spec_p) << "%" << endl;
     cout << "----------------------------------------------" << endl;
-
-    delete specfit;
-    delete gatedfit;
 }
 
