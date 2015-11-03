@@ -1,4 +1,4 @@
-#include "config.cpp+"
+#include "config.cpp++"
 
 TChain chain("DATA");
 TProof* proof;
@@ -6,6 +6,7 @@ TTree* DATA;
 
 void runs()
 {
+   gErrorIgnoreLevel = kWarning;
    AnalysisConfig& config = AnalysisConfig::Instance();
 
    for (auto i : config.Runs())
@@ -19,6 +20,7 @@ void runs()
    {
       proof = TProof::Open("lite://");
       chain.SetProof();
+      proof->Exec("gErrorIgnoreLevel = kWarning;");
       proof->Load("config.cpp+");
    }
    if (config.UsePID())
