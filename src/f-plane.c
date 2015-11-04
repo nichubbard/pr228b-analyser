@@ -159,6 +159,7 @@ Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
 Double_t    x1offset=0.0;
+Bool_t	t_PIDgood = false;
 
 // focal plane variables for TTree
 Int_t    t_X1hits = 0,  t_X2hits = 0,   t_U1hits = 0,   t_U2hits = 0;
@@ -2120,6 +2121,8 @@ INT focal_init(void)
   t1->Branch("pad2hiPT",&t_pad2hiPT,"t_pad2hiPT/D");
   t1->Branch("pad2lowPT",&t_pad2lowPT,"t_pad2lowPT/D");
 
+  t1->Branch("PIDgood", &t_PIDgood, "t_PIDgood/O");
+
   t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
   t1->Branch("X1th",&t_X1th,"t_X1th/D");
   t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
@@ -3218,6 +3221,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
         t_nU2wires=U2hits;
    }
    #endif
+
+   extern TCutG* CUTpid;
+   t_PIDgood = CUTpid->IsInside(t_tof, t_pad1);
    
    t1->Fill();    // fill the tree t1
    //t2->Fill();    // fill the tree t2 - PA

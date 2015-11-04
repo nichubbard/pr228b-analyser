@@ -4,6 +4,8 @@
 
 #include "ame.h"
 #include "config.h"
+#include <TCutG.h>
+#include <TFile.h>
 
 
 int ADCModules;
@@ -69,6 +71,8 @@ std::string *elements;
 double *masses;
 double T1;
 double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
+
+TCutG* CUTpid;
 
 void ParameterInit()
 {
@@ -811,6 +815,14 @@ void ReadConfiguration()
 	    printf("VDC2 is an old-type wire chamber\n");
 	    VDC2_new = false;
 	  }
+	}
+	else if(LineBuffer.compare(0,7,"PIDfile") == 0)
+	{
+	  input >> LineBuffer;
+	  printf("Using PID file: %s\n", LineBuffer.c_str());
+	  TFile* f = new TFile(LineBuffer.c_str(), "OLD");
+	  CUTpid = (TCutG*)f->Get("CUTpid");
+	  delete f;
 	}
 	else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 	{
