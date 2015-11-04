@@ -77,8 +77,10 @@ void Li2CO3::Begin(TTree * /*tree*/)
 
     if (fInput)
     {
-        fInput->Add(CUTpid);
-        fInput->Add(CUTX1tof);
+        if (CUTpid)
+            fInput->Add(CUTpid);
+        if (CUTX1tof)
+            fInput->Add(CUTX1tof);
         fInput->Add(
                 new TParameter<int>("tdc_gate_left", tdc_gate_left)
                 );
