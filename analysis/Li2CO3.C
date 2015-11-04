@@ -49,6 +49,9 @@ void Li2CO3::Begin(TTree * /*tree*/)
     //
     AnalysisConfig& config = AnalysisConfig::Instance();
 
+    energy_gate = config.UseEnergyGate();
+    energy_min = config.EnergyMin();
+    tdc_gate = config.UseTDCGate();
     tdc_gate_left = config.TDCGateLeft();
     tdc_gate_right = config.TDCGateRight();
     x1_oxygen_left = config.ExOxygenLeft();
@@ -82,28 +85,37 @@ void Li2CO3::Begin(TTree * /*tree*/)
         if (CUTX1tof)
             fInput->Add(CUTX1tof);
         fInput->Add(
+                new TParameter<bool>("energy_gate", energy_gate)
+                );
+        fInput->Add(
+                new TParameter<double>("energy_min", energy_min)
+                );
+        fInput->Add(
+               new TParameter<bool>("tdc_gate", tdc_gate)
+               );
+        fInput->Add(
                 new TParameter<int>("tdc_gate_left", tdc_gate_left)
                 );
         fInput->Add(
                 new TParameter<int>("tdc_gate_right", tdc_gate_right)
                 );
         fInput->Add(
-                new TParameter<int>("x1_oxygen_left", x1_oxygen_left)
+                new TParameter<double>("x1_oxygen_left", x1_oxygen_left)
                 );
         fInput->Add(
-                new TParameter<int>("x1_oxygen_right", x1_oxygen_right)
+                new TParameter<double>("x1_oxygen_right", x1_oxygen_right)
                 );
         fInput->Add(
-                new TParameter<int>("x1_oxygen_top", x1_oxygen_top)
+                new TParameter<double>("x1_oxygen_top", x1_oxygen_top)
                 );
         fInput->Add(
-                new TParameter<int>("x1_oxygen_bottom", x1_oxygen_bottom)
+                new TParameter<double>("x1_oxygen_bottom", x1_oxygen_bottom)
                 );
         fInput->Add(
-                new TParameter<int>("x1_background_l", x1_background_l)
+                new TParameter<double>("x1_background_l", x1_background_l)
                 );
         fInput->Add(
-                new TParameter<int>("x1_background_r", x1_background_r)
+                new TParameter<double>("x1_background_r", x1_background_r)
                 );
     }
 }
@@ -131,14 +143,17 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
 
     if (fInput)
     {
+        energy_gate = ((TParameter<bool>*)fInput->FindObject("energy_gate"))->GetVal();
+        energy_min = ((TParameter<double>*)fInput->FindObject("energy_min"))->GetVal();
+        tdc_gate = ((TParameter<bool>*)fInput->FindObject("tdc_gate"))->GetVal();
         tdc_gate_left = ((TParameter<int>*)fInput->FindObject("tdc_gate_left"))->GetVal();
         tdc_gate_right = ((TParameter<int>*)fInput->FindObject("tdc_gate_right"))->GetVal();
-        x1_oxygen_left = ((TParameter<int>*)fInput->FindObject("x1_oxygen_left"))->GetVal();
-        x1_oxygen_right = ((TParameter<int>*)fInput->FindObject("x1_oxygen_right"))->GetVal();
-        x1_oxygen_top = ((TParameter<int>*)fInput->FindObject("x1_oxygen_top"))->GetVal();
-        x1_oxygen_bottom = ((TParameter<int>*)fInput->FindObject("x1_oxygen_bottom"))->GetVal();
-        x1_background_l = ((TParameter<int>*)fInput->FindObject("x1_background_l"))->GetVal();
-        x1_background_r = ((TParameter<int>*)fInput->FindObject("x1_background_r"))->GetVal();
+        x1_oxygen_left = ((TParameter<double>*)fInput->FindObject("x1_oxygen_left"))->GetVal();
+        x1_oxygen_right = ((TParameter<double>*)fInput->FindObject("x1_oxygen_right"))->GetVal();
+        x1_oxygen_top = ((TParameter<double>*)fInput->FindObject("x1_oxygen_top"))->GetVal();
+        x1_oxygen_bottom = ((TParameter<double>*)fInput->FindObject("x1_oxygen_bottom"))->GetVal();
+        x1_background_l = ((TParameter<double>*)fInput->FindObject("x1_background_l"))->GetVal();
+        x1_background_r = ((TParameter<double>*)fInput->FindObject("x1_background_r"))->GetVal();
         CUTpid = (TCutG*)fInput->FindObject("CUTpid");
         CUTX1tof = (TCutG*)fInput->FindObject("CUTX1tof");
     }
@@ -256,16 +271,14 @@ Bool_t Li2CO3::Process(Long64_t entry)
     {
         stats_si_total++;
         raw->Fill(Ex, SiliconEnergy[i]);
-        if (SiliconEnergy[i] < 150)
+        if (energy_gate && SiliconEnergy[i] < energy_min)
         {
             stats_si_energy_rejected++;
             continue;
         }
-        //int time = (int)abs(SiliconTime[i] - tof) % 2675;
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
-        if(time >= tdc_gate_left && time <= tdc_gate_right)
-            //if (true)
+        if(!tdc_gate || (time >= tdc_gate_left && time <= tdc_gate_right))
         {
             filteredDhit.push_back(DetectorHit[i]);
             filteredE.push_back(SiliconEnergy[i]);
