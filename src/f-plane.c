@@ -435,7 +435,7 @@ switch (code) {
 			(*data),sbuffer, ((*data)>>5)&0xffff,(*data)&0x1f);
 		break;
 	case 0x11: // extended time trigger
-		printf("TDC Extended time trigger: 0x%08x, time tag: %ld\n", (*data),(*data)&0x7ffffff);
+		printf("TDC Extended time trigger: 0x%08x, time tag: %u\n", (*data),(*data)&0x7ffffff);
 		break;
 	case 0x18: // filler word
 		printf("TDC Filler: 0x%08x\n",(*data));
