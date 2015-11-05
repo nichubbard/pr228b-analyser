@@ -60,14 +60,22 @@ void Li2CO3::Begin(TTree * /*tree*/)
     x1_oxygen_bottom = config.ExOxygenBottom();
     x1_background_l = config.ExOxygenBackgroundLeft();
     x1_background_r = config.ExOxygenBackgroundRight();
+    embedPID = false;
 
     CUTpid = 0;
     CUTX1tof = 0;
     if (config.UsePID())
     {
-        TFile* pidfile = new TFile(config.PIDfile() + TString(".root"), "OLD");
-        CUTpid = (TCutG*)pidfile->Get("CUTpid");
-        delete pidfile;
+        if (config.PIDfile() == "TREE")
+        {
+            embedPID = true;
+        }
+        else
+        {
+            TFile* pidfile = new TFile(config.PIDfile() + TString(".root"), "OLD");
+            CUTpid = (TCutG*)pidfile->Get("CUTpid");
+            delete pidfile;
+        }
     }
     if (config.UseX1tofPID())
     {
@@ -84,6 +92,9 @@ void Li2CO3::Begin(TTree * /*tree*/)
             fInput->Add(CUTpid);
         if (CUTX1tof)
             fInput->Add(CUTX1tof);
+        fInput->Add(
+                new TParameter<bool>("embedPID", embedPID)
+                );
         fInput->Add(
                 new TParameter<bool>("energy_gate", energy_gate)
                 );
@@ -143,6 +154,7 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
 
     if (fInput)
     {
+        embedPID = ((TParameter<bool>*)fInput->FindObject("embedPID"))->GetVal();
         energy_gate = ((TParameter<bool>*)fInput->FindObject("energy_gate"))->GetVal();
         energy_min = ((TParameter<double>*)fInput->FindObject("energy_min"))->GetVal();
         tdc_gate = ((TParameter<bool>*)fInput->FindObject("tdc_gate"))->GetVal();
@@ -214,6 +226,7 @@ Bool_t Li2CO3::Process(Long64_t entry)
     b_t_Y1->GetEntry(entry);
     b_t_Y2->GetEntry(entry);
     b_t_ThSCAT->GetEntry(entry);
+    b_t_PIDgood->GetEntry(entry);
 
     std::vector<int> filteredDhit;
     std::vector<double> filteredE;
@@ -240,6 +253,11 @@ Bool_t Li2CO3::Process(Long64_t entry)
         return kTRUE;
     }
     if (CUTpid && !CUTpid->IsInside(tof, pad1))
+    {
+        stats_pid++;
+        return kTRUE;
+    }
+    if (embedPID && !PIDgood)
     {
         stats_pid++;
         return kTRUE;

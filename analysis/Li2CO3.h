@@ -26,6 +26,7 @@ class Li2CO3 : public TSelector {
         TTree          *fChain;   //!pointer to the analyzed TTree or TChain
 
         // Input data (from client)
+        bool embedPID;
         TCutG* CUTpid;
         TCutG* CUTX1tof;
         bool energy_gate;
@@ -90,6 +91,7 @@ class Li2CO3 : public TSelector {
         Double_t        pad2hiPT;
         Double_t        pad2lowPT;
         Double_t        Ex;
+        Bool_t          PIDgood;
         Double_t        X1pos;
         Double_t        X1th;
         Int_t           X1flag;
@@ -194,6 +196,7 @@ class Li2CO3 : public TSelector {
         TBranch        *b_t_pad2hiPT;   //!
         TBranch        *b_t_pad2lowPT;   //!
         TBranch        *b_t_Ex;
+        TBranch        *b_t_PIDgood; // !
         TBranch        *b_t_X1pos;   //!
         TBranch        *b_t_X1th;   //!
         TBranch        *b_t_X1flag;   //!
@@ -333,6 +336,7 @@ void Li2CO3::Init(TTree *tree)
     fChain->SetBranchAddress("pad2hiPT", &pad2hiPT, &b_t_pad2hiPT);
     fChain->SetBranchAddress("pad2lowPT", &pad2lowPT, &b_t_pad2lowPT);
     fChain->SetBranchAddress("Ex", &Ex, &b_t_Ex);
+    fChain->SetBranchAddress("PIDgood", &PIDgood, &b_t_PIDgood);
     fChain->SetBranchAddress("X1pos", &X1pos, &b_t_X1pos);
     fChain->SetBranchAddress("X1th", &X1th, &b_t_X1th);
     fChain->SetBranchAddress("X1flag", &X1flag, &b_t_X1flag);
