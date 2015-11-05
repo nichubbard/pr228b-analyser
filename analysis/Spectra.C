@@ -1,8 +1,17 @@
+TCut basecut = "!X1flag && !U1flag && !X2flag && !U2flag && X1chisq < 0.2";
+
 void Spectra()
 {
+    extern bool runsEmbedPID;
+    if (runsEmbedPID)
+    {
+        basecut = basecut && "PIDgood";
+    }
+    else
+    {
+        basecut = basecut && "CUTpid";
+    }
 }
-
-TCut basecut = "CUTpid && !X1flag && !U1flag && !X2flag && !U2flag && X1chisq < 0.2";
 
 void ExSi(TCut cut = "", TString name = "ExSi")
 {

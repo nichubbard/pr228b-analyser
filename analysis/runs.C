@@ -3,10 +3,12 @@
 TChain chain("DATA");
 TProof* proof;
 TTree* DATA;
+bool runsEmbedPID;
 
 void runs()
 {
    gErrorIgnoreLevel = kWarning;
+   runsEmbedPID = false;
    AnalysisConfig& config = AnalysisConfig::Instance();
 
    for (auto i : config.Runs())
@@ -25,17 +27,24 @@ void runs()
    }
    if (config.UsePID())
    {
-      std::string pid = config.PIDfile() + ".C";
-      if (config.UsePROOF())
+      if (config.PIDfile() == "TREE")
       {
-         proof->Load(pid.c_str());
-         proof->Exec("delete c1");
+         runsEmbedPID = true;
       }
       else
       {
-         gROOT->LoadMacro(pid.c_str());
+         std::string pid = config.PIDfile() + ".C";
+         if (config.UsePROOF())
+         {
+            proof->Load(pid.c_str());
+            proof->Exec("delete c1");
+         }
+         else
+         {
+            gROOT->LoadMacro(pid.c_str());
+         }
+         delete gDirectory->FindObject("c1");
       }
-      delete gDirectory->FindObject("c1");
    }
 
    DATA = &chain;
