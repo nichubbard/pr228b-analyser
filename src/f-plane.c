@@ -435,7 +435,7 @@ switch (code) {
 			(*data),sbuffer, ((*data)>>5)&0xffff,(*data)&0x1f);
 		break;
 	case 0x11: // extended time trigger
-		printf("TDC Extended time trigger: 0x%08x, time tag: %l\n", (*data),(*data)&0x7ffffff);
+		printf("TDC Extended time trigger: 0x%08x, time tag: %ld\n", (*data),(*data)&0x7ffffff);
 		break;
 	case 0x18: // filler word
 		printf("TDC Filler: 0x%08x\n",(*data));
@@ -1718,12 +1718,14 @@ double CalcTfromRigidity(double rig, double mass)
 
   double p = rig * TMath::C()/1e6;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 double CalcTfromP(double p, double mass)
 {
   double T = 0;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 double CalcExDirect(double Xcorr)
@@ -1840,7 +1842,7 @@ double CalcThetaPrime(double X1, double ThFP)
 
 double CalcPhiPrime(double X1, double ThFP, double Y1)
 {
-  
+  return 0.; 
 }
 
 double CalcTheta(double X1, double ThFP, double Y1)
@@ -1854,6 +1856,7 @@ double CalcTheta(double X1, double ThFP, double Y1)
   double result = -1;
 
   result = sqrt(pow(ThetaPrime + theta3,2.) + pow(PhiPrime,2.));
+  return result;
 }
 
 /*-- BOR routine --------------------Happens after init-----------------------------------------*/
