@@ -2576,7 +2576,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
-		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+		case TOF_TDC_CHAN: if(t_tof || t_tof==0) tof=ref_time; t_tof=tof; break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
