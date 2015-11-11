@@ -26,11 +26,11 @@ void RetuneLithium()
     TCanvas* c1 = new TCanvas("c_X1");
     h_X1->Draw();
     TCanvas* c2 = new TCanvas("c_Graph");
-    if (peaks >= 8)
+    if (peaks >= 7)
     {
         double* x = ts->GetPositionX();
         std::sort(&x[0], &x[peaks]);
-        TGraph* graph = new TGraph(6, &x[1], rigidities);
+        TGraph* graph = new TGraph(6, &x[0], rigidities);
         graph->Fit("pol2");
         graph->Draw("A*");
     }
