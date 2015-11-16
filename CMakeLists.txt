@@ -86,15 +86,6 @@ add_definitions(-Wno-cpp -Wno-write-strings -Wno-unused-variable
 set (CMAKE_C_FLAGS_DEBUG -O0)
 set (CMAKE_C_FLAGS_RELEASE -O3)
 
-find_package("ROOT" REQUIRED COMPONENTS Graf Hist Net Rint RIO Thread Tree)
-
-if (ROOT_FOUND)
-    include_directories(${ROOT_INCLUDE_DIRS})
-    target_link_libraries(analyzer ${ROOT_LIBRARIES})
-    add_definitions(${ROOT_DEFINITIONS} -DHAVE_ROOT -DUSE_ROOT)
-endif()
-
-
 if (MIDASSYS)
     include_directories(${MIDASSYS}/include)
     set (MIDAS_LIB ${MIDASSYS}/${OS_DIR}/lib)
@@ -111,3 +102,11 @@ find_package(Threads REQUIRED)
 target_link_libraries(analyzer ${CMAKE_THREAD_LIBS_INIT})
 
 target_link_libraries(analyzer rt util)
+
+find_package("ROOT" REQUIRED COMPONENTS Graf Hist Net Rint RIO Thread Tree)
+if (ROOT_FOUND)
+    include_directories(${ROOT_INCLUDE_DIRS})
+    target_link_libraries(analyzer ${ROOT_LIBRARIES})
+    add_definitions(${ROOT_DEFINITIONS} -DHAVE_ROOT -DUSE_ROOT)
+endif()
+
