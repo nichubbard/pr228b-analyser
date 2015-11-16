@@ -1,16 +1,14 @@
 TCut basecut = "!X1flag && !U1flag && !X2flag && !U2flag && X1chisq < 0.2";
+TCut pidcut = "CUTpid";
 
 void Spectra()
 {
     extern bool runsEmbedPID;
     if (runsEmbedPID)
     {
-        basecut = basecut && "PIDgood";
+        pidcut = "PIDgood";
     }
-    else
-    {
-        basecut = basecut && "CUTpid";
-    }
+    basecut = basecut && pidcut;
 }
 
 void ExSi(TCut cut = "", TString name = "ExSi")
@@ -43,11 +41,11 @@ void CheckLUT()
     TCanvas* cLUT = new TCanvas("cLUT");
     cLUT->Divide(2, 2);
     cLUT->cd(1);
-    DATA->Draw("X1res1:X1res0>>h_lutX1(100,0,1,100,-5,5)", "CUTpid", "colz");
+    DATA->Draw("X1res1:X1res0>>h_lutX1(100,0,1,100,-5,5)", pidcut, "colz");
     cLUT->cd(2);
-    DATA->Draw("U1res1:U1res0>>h_lutU1(100,0,1,100,-5,5)", "CUTpid", "colz");
+    DATA->Draw("U1res1:U1res0>>h_lutU1(100,0,1,100,-5,5)", pidcut, "colz");
     cLUT->cd(3);
-    DATA->Draw("X2res1:X2res0>>h_lutX2(100,0,1,100,-5,5)", "CUTpid", "colz");
+    DATA->Draw("X2res1:X2res0>>h_lutX2(100,0,1,100,-5,5)", pidcut, "colz");
     cLUT->cd(4);
-    DATA->Draw("U2res1:U2res0>>h_lutU2(100,0,1,100,-5,5)", "CUTpid", "colz");
+    DATA->Draw("U2res1:U2res0>>h_lutU2(100,0,1,100,-5,5)", pidcut, "colz");
 }
