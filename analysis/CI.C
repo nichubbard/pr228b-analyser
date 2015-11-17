@@ -20,5 +20,11 @@ void CI()
 
     cout << "Total CI   = " << sumCI << endl;
     cout << "Total time = " << sumClock << endl;
+    double R = 20.;
+    double scale = 1E-12;
+    double e = 1.6E-19;
+    double Z = 2;
+    double N = sumCI * R * scale / (Z * e);
+    cout << "Total N    = " << N << endl;
 }
 
