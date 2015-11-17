@@ -823,6 +823,8 @@ void ReadConfiguration()
 	  TFile* f = new TFile(LineBuffer.c_str(), "OLD");
 	  CUTpid = (TCutG*)f->Get("CUTpid");
 	  delete f;
+	  extern TFile* f1;
+	  f1->cd();
 	}
 	else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 	{
