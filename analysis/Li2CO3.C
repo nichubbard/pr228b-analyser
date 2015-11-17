@@ -322,10 +322,15 @@ Bool_t Li2CO3::Process(Long64_t entry)
 
     std::vector<int> hpd(8);
 
-    for (size_t i = 0; i < filteredE.size(); ++i)
+    for (size_t i = 0; i < 8; ++i)
     {
-        gated->Fill(Ex, filteredE[i]);
-        hpd[filteredDhit[i]-1] += 1;
+        hpd[i] = 0;
+    }
+
+    for (size_t i = 0; i < DetectorHit.size(); ++i)
+    {
+        gated->Fill(Ex, SiliconEnergy[i]);
+        hpd[DetectorHit[i]-1] += 1;
     }
     int dets = 0;
     for (size_t i = 0; i < hpd.size(); ++i)
