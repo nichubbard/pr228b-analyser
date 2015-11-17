@@ -47,6 +47,10 @@ AnalysisConfig::AnalysisConfig()
       {
          usePROOF = get_bool(value);
       }
+      else if (name == "PROOFWorkers")
+      {
+         proofWorkers = std::stoi(value);
+      }
       else if (name == "UsePID")
       {
          usePID = get_bool(value);

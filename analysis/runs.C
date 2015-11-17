@@ -20,7 +20,17 @@ void runs()
 
    if (config.UsePROOF())
    {
-      proof = TProof::Open("lite://");
+      int proofWorkers = config.PROOFWorkers();
+      if (proofWorkers > 0)
+      {
+         char format[32];
+         sprintf(format, "workers=%d", proofWorkers);
+         proof = TProof::Open(format);
+      }
+      else
+      {
+         proof = TProof::Open("");
+      }
       chain.SetProof();
       proof->Exec("gErrorIgnoreLevel = kWarning;");
       proof->Load("config.cpp+");

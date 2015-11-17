@@ -11,6 +11,7 @@ class AnalysisConfig
 
       std::vector<int> Runs() const;
       bool UsePROOF() const;
+      int PROOFWorkers() const;
 
       bool UsePID() const;
       std::string PIDfile() const;
@@ -53,6 +54,7 @@ class AnalysisConfig
 
       std::vector<int> runs;
       bool usePROOF;
+      int proofWorkers;
       bool usePID;
       std::string pidfile;
       bool useX1tofPID;
@@ -107,6 +109,11 @@ inline std::vector<int> AnalysisConfig::Runs() const
 inline bool AnalysisConfig::UsePROOF() const
 {
    return usePROOF;
+}
+
+inline int AnalysisConfig::PROOFWorkers() const
+{
+   return proofWorkers;
 }
 
 inline bool AnalysisConfig::UsePID() const
