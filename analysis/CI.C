@@ -11,8 +11,8 @@ void CI()
         char buf[32];
         sprintf(buf, "run%05d.root", i);
         TFile* file = TFile::Open(buf);
-        TH1F* Scaler_CIU = (TH1F*)file->Get("Scaler_CIU");
-        TH1F* Scaler_ClockU = (TH1F*)file->Get("Scaler_ClockU");
+        TH1F* Scaler_CIU = (TH1F*)file->Get("Scaler_CII");
+        TH1F* Scaler_ClockU = (TH1F*)file->Get("Scaler_ClockI");
         sumCI += Scaler_CIU->GetEntries();
         sumClock += Scaler_ClockU->GetEntries();
         delete file;
@@ -24,7 +24,11 @@ void CI()
     double scale = 1E-12;
     double e = 1.6E-19;
     double Z = 2;
+    double C = sumCI * R * 1E-3;
+    cout << "Total C    = " << C << " nC" << endl;
     double N = sumCI * R * scale / (Z * e);
     cout << "Total N    = " << N << endl;
+    double I = C / sumClock * 10;
+    cout << "Average I  = " << I << " nA" << endl;
 }
 
