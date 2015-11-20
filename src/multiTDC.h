@@ -24,7 +24,7 @@ public :
   
   private :
   //The actual members of the class
-  int TDChits;
+  unsigned int TDChits;
   
   std::vector<int> TDCchannels;
   std::vector<double> TDCvalues;

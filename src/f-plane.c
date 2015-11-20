@@ -453,9 +453,15 @@ void read_misalignment(int *_matime, char *fileName)
    char string_var[200] = "";
    int  int_var = 0;
 
-   fscanf(file,"%s", string_var);
-   int_var = atoi(string_var);
-   *_matime = int_var;
+   if(fscanf(file,"%s", string_var) == 1)
+   {
+     int_var = atoi(string_var);
+     *_matime = int_var;
+   }
+   else
+   {
+     printf("Error reading misalignment!\n");
+   }
    //printf("----------------Read routine: misalignment time cutoff (sec): %i  -----------\n",*_matime );                
    fclose(file);   
 }
@@ -473,10 +479,16 @@ void read_lut(float lutx[], int offset, char *fileName)
       if (feof(file)){
          break;           //just in case
       }
-      fscanf(file,"%s", string_var);
-      float_var = strtof(string_var, NULL);
-      //printf("float_var : %f  \n",float_var);
-      if((i-offset)>0) lutx[i-offset] = float_var;        
+      if(fscanf(file,"%s", string_var) == 1)
+      {
+        float_var = strtof(string_var, NULL);
+        //printf("float_var : %f  \n",float_var);
+        if((i-offset)>0) lutx[i-offset] = float_var;
+      }
+      else
+      {
+        printf("Error reading LUT file!\n");
+      }
    }
    fclose(file);   
 }
@@ -494,11 +506,17 @@ void read_cable(float cable[], char* fileName)
       if (feof(file)){
         break; //just in case
       }	
-      fscanf(file,"%s", string_var);
-      float_var = strtof(string_var, NULL);
-      //printf("float_Var : %f  \n",float_var);
-      cable[i] = float_var;
-      //printf("float # %f \n",cable[i]);
+      if(fscanf(file,"%s", string_var) == 1)
+      {
+        float_var = strtof(string_var, NULL);
+        //printf("float_Var : %f  \n",float_var);
+        cable[i] = float_var;
+	//printf("float # %f \n",cable[i]);
+      }
+      else
+      {
+        printf("Error reading LUT file!\n");
+      }
    }
    fclose(file);   
 }

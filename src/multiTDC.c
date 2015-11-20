@@ -104,7 +104,7 @@ multiTDC::~multiTDC()
 
 void multiTDC::PrintEvent()
 {
-	printf("Size of event: %d\n", SizeOfEvent());
+	printf("Size of event: %u\n", SizeOfEvent());
 	TDCchannels.clear();
 	TDCvalues.clear();
 }

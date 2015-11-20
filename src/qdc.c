@@ -151,22 +151,22 @@ void v792N_printEntry(const v792N_Data* v) {
 // keep for debugging purposes
 switch (v->data.type) {
     case v792N_typeMeasurement:
-      printf("Data=0x%08lx Measurement ch=%3d v=%6d over=%1d under=%1d\n",
+      printf("Data=0x%08x Measurement ch=%3d v=%6d over=%1d under=%1d\n",
 	     v->raw,v->data.channel,v->data.qdc,v->data.ov,v->data.un);
       break;
     case v792N_typeHeader:
-      printf("Data=0x%08lx Header geo=%2x crate=%2x cnt=%2d\n",
+      printf("Data=0x%08x Header geo=%2x crate=%2x cnt=%2d\n",
       	   v->raw,v->header.geo,v->header.crate,v->header.cnt);
       break;
     case v792N_typeFooter:
-      printf("Data=0x%08lx Footer geo=%2x evtCnt=%7d\n",
+      printf("Data=0x%08x Footer geo=%2x evtCnt=%7d\n",
     	   v->raw,v->footer.geo,v->footer.evtCnt);
       break;
     case v792N_typeFiller:
-      printf("Data=0x%08lx Filler\n",v->raw);
+      printf("Data=0x%08x Filler\n",v->raw);
       break;
     default:
-      printf("Data=0x%08lx Unknown %04x\n",v->raw,v->data.type);
+      printf("Data=0x%08x Unknown %04x\n",v->raw,v->data.type);
       break;
     }
 }
