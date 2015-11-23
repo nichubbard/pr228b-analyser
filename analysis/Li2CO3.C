@@ -427,9 +427,9 @@ void Li2CO3::Terminate()
     // the results graphically or save the results to file.
     //
     gStyle->SetOptStat(0);
-    TCanvas* csp = new TCanvas("c_spectrometer", "Spectrometer Position");
+    TCanvas* csp = new TCanvas("c_spectrometer", "Excitation Energy");
     spectrometer = (TH1F*)fOutput->FindObject("spectrometer");
-    spectrometer->GetXaxis()->SetTitle("Spectrometer Position/mm");
+    spectrometer->GetXaxis()->SetTitle("Excitation Energy/Mev");
     spectrometer->GetYaxis()->SetTitle("Counts");
     spectrometer->SetTitle("Spectrometer Position");
     spectrometer->Draw("");
@@ -448,28 +448,28 @@ void Li2CO3::Terminate()
 
     TCanvas* craw = new TCanvas("c_raw", "Ungated Plot");
     raw = (TH2F*)fOutput->FindObject("raw");
-    raw->GetXaxis()->SetTitle("Spectrometer Position/mm");
+    raw->GetXaxis()->SetTitle("Excitation Energy/Mev");
     raw->GetYaxis()->SetTitle("Silicon Energy/keV");
     raw->SetTitle("SiE vs X1Pos - No Gates");
     raw->Draw("colz");
 
     TCanvas* c1 = new TCanvas("c_gated", "Gated Plot");
     gated = (TH2F*)fOutput->FindObject("gated");
-    gated->GetXaxis()->SetTitle("Spectrometer Position/mm");
+    gated->GetXaxis()->SetTitle("Excitation Energy/Mev");
     gated->GetYaxis()->SetTitle("Silicon Energy/keV");
     gated->SetTitle("SiE vs X1Pos - TDC Gated");
     gated->Draw("colz");
 
     TCanvas* c2 = new TCanvas("c_gated_coinc", "Coincidence Plot");
     gated_coinc = (TH2F*)fOutput->FindObject("gated_coinc");
-    gated_coinc->GetXaxis()->SetTitle("Spectrometer Position/mm");
+    gated_coinc->GetXaxis()->SetTitle("Excitation Energy/Mev");
     gated_coinc->GetYaxis()->SetTitle("Silicon Energy/keV");
     gated_coinc->SetTitle("SiE vs X1Pos - TDC Gated + Coincidence");
     gated_coinc->Draw("colz");
 
     TCanvas* c3 = new TCanvas("c_mpcty", "Multiplicity Plot");
     mpcty = (TH2F*)fOutput->FindObject("multiplicity");
-    mpcty->GetXaxis()->SetTitle("Spectrometer Position/mm");
+    mpcty->GetXaxis()->SetTitle("Excitation Energy/Mev");
     mpcty->GetYaxis()->SetTitle("Multiplicity");
     mpcty->SetTitle("Silicon Multiplicity vs X1Pos");
     mpcty->Draw("colz");
