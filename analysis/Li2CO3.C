@@ -327,9 +327,9 @@ Bool_t Li2CO3::Process(Long64_t entry)
         hpd[i] = 0;
     }
 
-    for (size_t i = 0; i < DetectorHit.size(); ++i)
+    for (size_t i = 0; i < filteredE.size(); ++i)
     {
-        gated->Fill(Ex, SiliconEnergy[i]);
+        gated->Fill(Ex, filteredE[i]);
         hpd[DetectorHit[i]-1] += 1;
     }
     int dets = 0;
