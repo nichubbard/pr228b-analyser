@@ -34,12 +34,13 @@ class Carbon : public TSelector {
         bool tdc_gate;
         int tdc_gate_left;
         int tdc_gate_right;
-        double x1_oxygen_left;
-        double x1_oxygen_right;
-        double x1_oxygen_top;
-        double x1_oxygen_bottom;
+        double x1_carbon_left;
+        double x1_carbon_right;
+        double x1_carbon_top;
+        double x1_carbon_bottom;
         double x1_background_l;
         double x1_background_r;
+        double efficiency;
 
         // Output data
         TH1F* spectrometer;

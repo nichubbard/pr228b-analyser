@@ -54,12 +54,13 @@ void Carbon::Begin(TTree * /*tree*/)
     tdc_gate = config.UseTDCGate();
     tdc_gate_left = config.TDCGateLeft();
     tdc_gate_right = config.TDCGateRight();
-    x1_oxygen_left = config.ExOxygenLeft();
-    x1_oxygen_right = config.ExOxygenRight();
-    x1_oxygen_top = config.ExOxygenTop();
-    x1_oxygen_bottom = config.ExOxygenBottom();
-    x1_background_l = config.ExOxygenBackgroundLeft();
-    x1_background_r = config.ExOxygenBackgroundRight();
+    x1_carbon_left = config.ExCarbonLeft();
+    x1_carbon_right = config.ExCarbonRight();
+    x1_carbon_top = config.ExCarbonTop();
+    x1_carbon_bottom = config.ExCarbonBottom();
+    x1_background_l = config.ExCarbonBackgroundLeft();
+    x1_background_r = config.ExCarbonBackgroundRight();
+    efficiency = config.PairEfficiency();
     embedPID = false;
 
     CUTpid = 0;
@@ -111,22 +112,25 @@ void Carbon::Begin(TTree * /*tree*/)
                 new TParameter<int>("tdc_gate_right", tdc_gate_right)
                 );
         fInput->Add(
-                new TParameter<double>("x1_oxygen_left", x1_oxygen_left)
+                new TParameter<double>("x1_carbon_left", x1_carbon_left)
                 );
         fInput->Add(
-                new TParameter<double>("x1_oxygen_right", x1_oxygen_right)
+                new TParameter<double>("x1_carbon_right", x1_carbon_right)
                 );
         fInput->Add(
-                new TParameter<double>("x1_oxygen_top", x1_oxygen_top)
+                new TParameter<double>("x1_carbon_top", x1_carbon_top)
                 );
         fInput->Add(
-                new TParameter<double>("x1_oxygen_bottom", x1_oxygen_bottom)
+                new TParameter<double>("x1_carbon_bottom", x1_carbon_bottom)
                 );
         fInput->Add(
                 new TParameter<double>("x1_background_l", x1_background_l)
                 );
         fInput->Add(
                 new TParameter<double>("x1_background_r", x1_background_r)
+                );
+        fInput->Add(
+                new TParameter<double>("efficiency", efficiency)
                 );
     }
 }
@@ -160,12 +164,13 @@ void Carbon::SlaveBegin(TTree * /*tree*/)
         tdc_gate = ((TParameter<bool>*)fInput->FindObject("tdc_gate"))->GetVal();
         tdc_gate_left = ((TParameter<int>*)fInput->FindObject("tdc_gate_left"))->GetVal();
         tdc_gate_right = ((TParameter<int>*)fInput->FindObject("tdc_gate_right"))->GetVal();
-        x1_oxygen_left = ((TParameter<double>*)fInput->FindObject("x1_oxygen_left"))->GetVal();
-        x1_oxygen_right = ((TParameter<double>*)fInput->FindObject("x1_oxygen_right"))->GetVal();
-        x1_oxygen_top = ((TParameter<double>*)fInput->FindObject("x1_oxygen_top"))->GetVal();
-        x1_oxygen_bottom = ((TParameter<double>*)fInput->FindObject("x1_oxygen_bottom"))->GetVal();
+        x1_carbon_left = ((TParameter<double>*)fInput->FindObject("x1_carbon_left"))->GetVal();
+        x1_carbon_right = ((TParameter<double>*)fInput->FindObject("x1_carbon_right"))->GetVal();
+        x1_carbon_top = ((TParameter<double>*)fInput->FindObject("x1_carbon_top"))->GetVal();
+        x1_carbon_bottom = ((TParameter<double>*)fInput->FindObject("x1_carbon_bottom"))->GetVal();
         x1_background_l = ((TParameter<double>*)fInput->FindObject("x1_background_l"))->GetVal();
         x1_background_r = ((TParameter<double>*)fInput->FindObject("x1_background_r"))->GetVal();
+        efficiency = ((TParameter<double>*)fInput->FindObject("efficiency"))->GetVal();
         CUTpid = (TCutG*)fInput->FindObject("CUTpid");
         CUTX1tof = (TCutG*)fInput->FindObject("CUTX1tof");
     }
@@ -295,6 +300,8 @@ Bool_t Carbon::Process(Long64_t entry)
             continue;
         }
         if (DetectorHit[i] < 5)
+            continue;
+        if (DetectorHit[i] == 6)
             continue;
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
@@ -508,90 +515,62 @@ void Carbon::Terminate()
     using std::setw; using std::setprecision;
     cout.setf(std::ios_base::right, std::ios_base::adjustfield);
     cout << "============== GATE STATISTICS ===============" << endl;
-    cout << " Spectrometer Events     : " << setw(8) << stats_spec_total << endl;
-    cout << " Rejected by PID         : " << setw(8) << stats_pid
+    cout << " Spectrometer Events     : " << setw(10) << stats_spec_total << endl;
+    cout << " Rejected by PID         : " << setw(10) << stats_pid
         << setprecision(2) << " (" << (100.0 * stats_pid / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by PID2        : " << setw(8) << stats_pid2
+    cout << " Rejected by PID2        : " << setw(10) << stats_pid2
         << setprecision(2) << " (" << (100.0 * stats_pid2 / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by X1 Chisq    : " << setw(8) << stats_x1_chisq
+    cout << " Rejected by X1 Chisq    : " << setw(10) << stats_x1_chisq
         << setprecision(2) << " (" << (100.0 * stats_x1_chisq / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by X1 flag     : " << setw(8) << stats_x1_flag
+    cout << " Rejected by X1 flag     : " << setw(10) << stats_x1_flag
         << setprecision(2) << " (" << (100.0 * stats_x1_flag / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by X2 flag     : " << setw(8) << stats_x2_flag
+    cout << " Rejected by X2 flag     : " << setw(10) << stats_x2_flag
         << setprecision(2) << " (" << (100.0 * stats_x2_flag / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by U1 flag     : " << setw(8) << stats_u1_flag
+    cout << " Rejected by U1 flag     : " << setw(10) << stats_u1_flag
         << setprecision(2) << " (" << (100.0 * stats_u1_flag / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by U2 flag     : " << setw(8) << stats_u2_flag
+    cout << " Rejected by U2 flag     : " << setw(10) << stats_u2_flag
         << setprecision(2) << " (" << (100.0 * stats_u2_flag / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by Y1          : " << setw(8) << stats_y1
+    cout << " Rejected by Y1          : " << setw(10) << stats_y1
         << setprecision(2) << " (" << (100.0 * stats_y1 / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by Y2          : " << setw(8) << stats_y2
+    cout << " Rejected by Y2          : " << setw(10) << stats_y2
         << setprecision(2) << " (" << (100.0 * stats_y2 / stats_spec_total) << "%)" << endl;
-    cout << " Rejected by ThScat      : " << setw(8) << stats_thscat
+    cout << " Rejected by ThScat      : " << setw(10) << stats_thscat
         << setprecision(2) << " (" << (100.0 * stats_thscat / stats_spec_total) << "%)" << endl;
-    cout << " Accepted                : " << setw(8) << stats_spec_accepted
+    cout << " Accepted                : " << setw(10) << stats_spec_accepted
         << setprecision(2) << " (" << (100.0 * stats_spec_accepted / stats_spec_total) << "%)" << endl;
     cout << "----------------------------------------------" << endl;
-    cout << " Silicon Events          : " << setw(8) << stats_si_total << endl;
-    cout << " Rejected by Energy      : " << setw(8) << stats_si_energy_rejected
+    cout << " Silicon Events          : " << setw(10) << stats_si_total << endl;
+    cout << " Rejected by Energy      : " << setw(10) << stats_si_energy_rejected
         << setprecision(2) << " (" << (100.0 * stats_si_energy_rejected / stats_si_total) << "%)" << endl;
-    cout << " Rejected by TDC         : " << setw(8) << stats_si_tdc_rejected
+    cout << " Rejected by TDC         : " << setw(10) << stats_si_tdc_rejected
         << setprecision(2) << " (" << (100.0 * stats_si_tdc_rejected / stats_si_total) << "%)" << endl;
-    cout << " Accepted                : " << setw(8) << stats_si_accepted
+    cout << " Accepted                : " << setw(10) << stats_si_accepted
         << setprecision(2) << " (" << (100.0 * stats_si_accepted / stats_si_total) << "%)" << endl;
     cout << "----------------------------------------------" << endl;
 
     csp->cd();
-    //TF1* specfit = new TF1("specfit", "gaus");
-    //spectrometer->Fit("specfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
-    //double a = specfit->GetParameter(0);
-    //double mu = specfit->GetParameter(1);
-    //double sigma = specfit->GetParameter(2);
-    //delete specfit;
-    //specfit = new TF1("specfit", "gaus(0)+pol1(3)");
-    //specfit->SetParameter(0, a);
-    //specfit->SetParameter(1, mu);
-    //specfit->SetParameter(2, sigma);
-    //spectrometer->Fit("specfit", "QLM", "", x1_background_l, x1_background_r);
-    TF1* specfit = new TF1("specfit", "[0]*exp(-0.5*((x-[1])/[2])**2)/(sqrt(2*pi)*[2])+[3]*exp(-0.5*((x-[4])/[2])**2)/(sqrt(2*pi)*[2])+pol1(5)");
-    specfit->GetFormula()->Compile();
-    specfit->SetParameter(0, 5);
-    specfit->SetParameter(1, 6.049);
-    specfit->SetParameter(2, 0.02);
-    specfit->SetParameter(3, 15);
-    specfit->SetParameter(4, 6.129);
-    specfit->SetParameter(5, 400);
-    specfit->SetParameter(6, 0);
-    spectrometer->Fit(specfit, "FQMN", "", x1_background_l, x1_background_r);
-
-    TF1* specfit2 = new TF1("fit_first_gaussian", "gausn(0)+pol1(3)");
-    specfit2->FixParameter(0, specfit->GetParameter(0));
-    specfit2->FixParameter(1, specfit->GetParameter(1));
-    specfit2->FixParameter(2, specfit->GetParameter(2));
-    specfit2->FixParameter(3, specfit->GetParameter(5));
-    specfit2->FixParameter(4, specfit->GetParameter(6));
-    specfit2->SetLineColor(kRed);
-    spectrometer->Fit(specfit2, "QFM", "", x1_background_l, x1_background_r);
-
-    TF1* specfit3 = new TF1("specfit_second_gaussian", "gausn(0)+pol1(3)");
-    specfit3->FixParameter(0, specfit->GetParameter(3));
-    specfit3->FixParameter(1, specfit->GetParameter(4));
-    specfit3->FixParameter(2, specfit->GetParameter(2));
-    specfit3->FixParameter(3, specfit->GetParameter(5));
-    specfit3->FixParameter(4, specfit->GetParameter(6));
-    specfit3->SetLineColor(kBlack);
-    spectrometer->Fit(specfit3, "QFM+", "", x1_background_l, x1_background_r);
+    TF1* specfit = new TF1("specfit", "gaus");
+    spectrometer->Fit("specfit", "QN", "", x1_carbon_left, x1_carbon_right);
+    double a = specfit->GetParameter(0);
+    double mu = specfit->GetParameter(1);
+    double sigma = specfit->GetParameter(2);
+    delete specfit;
+    specfit = new TF1("specfit", "gaus(0)+pol1(3)");
+    specfit->SetParameter(0, a);
+    specfit->SetParameter(1, mu);
+    specfit->SetParameter(2, sigma);
+    spectrometer->Fit("specfit", "FQLM", "", x1_background_l, x1_background_r);
 
     TCanvas* cgatedpx = new TCanvas("cgatedpx", "Gated Projection X");
-    double firstx = gated->GetYaxis()->FindBin(x1_oxygen_bottom);
-    double lastx = gated->GetYaxis()->FindBin(x1_oxygen_top);
+    double firstx = gated->GetYaxis()->FindBin(x1_carbon_bottom);
+    double lastx = gated->GetYaxis()->FindBin(x1_carbon_top);
     TH1D* gated_px = gated->ProjectionX("_px", firstx, lastx);
     gated_px->GetYaxis()->SetTitle("Counts");
     TF1* gatedfit = new TF1("gatedfit", "gaus");
-    gated_px->Fit("gatedfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
-    double a = gatedfit->GetParameter(0);
-    double mu = gatedfit->GetParameter(1);
-    double sigma = gatedfit->GetParameter(2);
+    gated_px->Fit("gatedfit", "QN", "", x1_carbon_left, x1_carbon_right);
+    a = gatedfit->GetParameter(0);
+    mu = gatedfit->GetParameter(1);
+    sigma = gatedfit->GetParameter(2);
     delete gatedfit;
     gatedfit = new TF1("gatedfit", "gaus(0)+pol1(3)");
     gatedfit->SetParameter(0, a);
@@ -601,12 +580,12 @@ void Carbon::Terminate()
     gated_px->Draw();
 
     TCanvas* ccoincpx = new TCanvas("ccoincpx", "Coincidence Projection X");
-    firstx = gated_coinc->GetYaxis()->FindBin(x1_oxygen_bottom);
-    lastx = gated_coinc->GetYaxis()->FindBin(x1_oxygen_top);
+    firstx = gated_coinc->GetYaxis()->FindBin(x1_carbon_bottom);
+    lastx = gated_coinc->GetYaxis()->FindBin(x1_carbon_top);
     TH1D* coinc_px = gated_coinc->ProjectionX("_px", firstx, lastx);
     coinc_px->GetYaxis()->SetTitle("Counts");
     TF1* coincfit = new TF1("coincfit", "gaus");
-    coinc_px->Fit("coincfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
+    coinc_px->Fit("coincfit", "QN", "", x1_carbon_left, x1_carbon_right);
     a = coincfit->GetParameter(0);
     mu = coincfit->GetParameter(1);
     sigma = coincfit->GetParameter(2);
@@ -620,8 +599,8 @@ void Carbon::Terminate()
     coinc_px->Draw();
 
     TF1* specbg = new TF1("specbg", "pol1");
-    specbg->FixParameter(0, specfit->GetParameter(5));
-    specbg->FixParameter(1, specfit->GetParameter(6));
+    specbg->FixParameter(0, specfit->GetParameter(3));
+    specbg->FixParameter(1, specfit->GetParameter(4));
     csp->cd();
     specbg->SetLineColor(kGreen);
     spectrometer->Fit("specbg", "QF+", "", x1_background_l, x1_background_r);
@@ -638,19 +617,16 @@ void Carbon::Terminate()
     coincbg->SetLineColor(kGreen);
     coinc_px->Fit("coincbg", "QF+", "", x1_background_l, x1_background_r);
 
-    int binLeft = spectrometer->GetXaxis()->FindBin(x1_oxygen_left);
-    int binRight = spectrometer->GetXaxis()->FindBin(x1_oxygen_right);
-    double zeroplus = specfit->GetParameter(0);
-    double threeminus = specfit->GetParameter(3);
-    double spec_r = zeroplus / (zeroplus + threeminus);
+    int binLeft = spectrometer->GetXaxis()->FindBin(x1_carbon_left);
+    int binRight = spectrometer->GetXaxis()->FindBin(x1_carbon_right);
 
-    double spec_b = specbg->Integral(x1_oxygen_left, x1_oxygen_right) / spectrometer->GetBinWidth(binLeft) * spec_r;
-    double spec_i = spectrometer->Integral(binLeft, binRight) * spec_r;
+    double spec_b = specbg->Integral(x1_carbon_left, x1_carbon_right) / spectrometer->GetBinWidth(binLeft);
+    double spec_i = spectrometer->Integral(binLeft, binRight);
     double spec_p = spec_i - spec_b;
-    double gated_b = gatedbg->Integral(x1_oxygen_left, x1_oxygen_right) / gated_px->GetBinWidth(binLeft);
+    double gated_b = gatedbg->Integral(x1_carbon_left, x1_carbon_right) / gated_px->GetBinWidth(binLeft);
     double gated_i = gated_px->Integral(binLeft, binRight);
     double gated_p = gated_i - gated_b;
-    double coinc_b = coincbg->Integral(x1_oxygen_left, x1_oxygen_right) / (coinc_px->GetBinWidth(binLeft) * 2);
+    double coinc_b = coincbg->Integral(x1_carbon_left, x1_carbon_right) / (coinc_px->GetBinWidth(binLeft) * 2);
     double coinc_i = coinc_px->Integral(binLeft, binRight) / 2;
     double coinc_p = coinc_i - coinc_b;
 
@@ -658,24 +634,27 @@ void Carbon::Terminate()
     cout << "============== PEAK STATISTICS ===============" << endl;
     cout.setf(cout.fixed, cout.floatfield);
     cout << setprecision(2);
-    cout << "0+ to 3- Ratio           : " << setw(8) << spec_r << endl;
-    cout << "Total spectrometer counts: " << setw(8) << spec_i << endl;
-    cout << "Spectrometer background  : " << setw(8) << spec_b << endl;
-    cout << "Spectrometer peak        : " << setw(8) << spec_p
+    cout << "Total spectrometer counts: " << setw(10) << spec_i << endl;
+    cout << "Spectrometer background  : " << setw(10) << spec_b << endl;
+    cout << "Spectrometer peak        : " << setw(10) << spec_p
         << " (" << (spec_p * 100 / spec_i ) << "%)" << endl;
-    cout << "Total single counts      : " << setw(8) << gated_i << endl;
-    cout << "Single background        : " << setw(8) << gated_b << endl;
-    cout << "Single peak              : " << setw(8) << gated_p
+    cout << "Total single counts      : " << setw(10) << gated_i << endl;
+    cout << "Single background        : " << setw(10) << gated_b << endl;
+    cout << "Single peak              : " << setw(10) << gated_p
         << " (" << (gated_p * 100 / gated_i ) << "%)" << endl;
-    cout << "Total double counts      : " << setw(8) << coinc_i << endl;
-    cout << "Double background        : " << setw(8) << coinc_b << endl;
-    cout << "Double peak              : " << setw(8) << coinc_p
+    cout << "Total double counts      : " << setw(10) << coinc_i << endl;
+    cout << "Double background        : " << setw(10) << coinc_b << endl;
+    cout << "Double peak              : " << setw(10) << coinc_p
         << " (" << (coinc_p * 100 / coinc_i ) << "%)" << endl;
     cout << "----------------------------------------------" << endl;
-    cout << "Single efficiency        : " << setw(8) <<
-        (gated_p * 100.0 / spec_p) << "%" << endl;
-    cout << "Double efficiency        : " << setw(8) <<
-        (coinc_p * 100.0 / spec_p) << "%" << endl;
+    cout << "Double efficiency        : " << setw(10) <<
+        (efficiency / 100.0) << "%" << endl;
+    cout << "Single ratio             : " << setw(10) << std::scientific <<
+        (gated_p / spec_p) << endl;
+    cout << "Double ratio             : " << setw(10) << std::scientific <<
+        (coinc_p / spec_p) << endl;
+    cout << "Branching ratio          : " << setw(10) << std::scientific <<
+        (coinc_p / spec_p / (efficiency / 100)) << endl;
     cout << "----------------------------------------------" << endl;
 }
 
