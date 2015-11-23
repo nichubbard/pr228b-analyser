@@ -244,10 +244,10 @@ bool W1ADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
 	    }
 	  //if(TDCChannel<832)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
 	}
-      if(W1ADCChannelLimits[i][0]==-1)result = true; //No information for some of the W1s -> Suppress this test (i.e. if there is no ADC channel set)
-      if(W1ADCChannelLimits[i][1]==-1)result = true;
-      if(W1TDCChannelLimits[i][0]==-1)result = true;
-      if(W1TDCChannelLimits[i][1]==-1)result = true;
+      /*if(W1ADCChannelLimits[i][0]==-1)result = true; //No information for some of the W1s -> Suppress this test (i.e. if there is no ADC channel set)*/
+      /*if(W1ADCChannelLimits[i][1]==-1)result = true;*/
+      /*if(W1TDCChannelLimits[i][0]==-1)result = true;*/
+      /*if(W1TDCChannelLimits[i][1]==-1)result = true;*/
 
     }
 
@@ -288,8 +288,8 @@ bool W1TDCFrontTest(int TDCChannel)
 	{
 	  result = true;
 	}
-      if (W1TDCChannelLimits[i][0] == -1) result = true;
-      if (W1TDCChannelLimits[i][1] == -1) result = true;
+      /*if (W1TDCChannelLimits[i][0] == -1) result = true;*/
+      /*if (W1TDCChannelLimits[i][1] == -1) result = true;*/
     }
   return result;
 }
