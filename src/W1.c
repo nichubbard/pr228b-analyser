@@ -262,7 +262,7 @@ bool W1ADCTDCChannelTestNSide(int ADCChannel, int TDCChannel)
     {
       if(ADCChannel>=W1ADCChannelLimits[i][2] && ADCChannel<=W1ADCChannelLimits[i][3] && TDCChannel>=W1TDCChannelLimits[i][2] && TDCChannel<=W1TDCChannelLimits[i][3])//Check to see if the ADC/TDC events are in the same detector
 	{
-	  if(ADCChannel%8==TDCChannel%8)
+	  if(ADCChannel%16==TDCChannel%16)
 	    {
 	      result = true;
 	    }
