@@ -19,10 +19,11 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 	for(int n=0;n<ntdc;n++)
 	{
 		int channel = TDC_channel_import[n];
+		if (!(channel > 0 && channel < TDCsize))
+			continue;
 		ChannelCounter[channel] += 1;
 
-		if (channel > 0 && channel < TDCsize &&
-				TDC_value_import[n] > PulseLimits[0] &&
+		if (TDC_value_import[n] > PulseLimits[0] &&
 				TDC_value_import[n] < PulseLimits[1])
 		{
 			GoodChannelCounter[channel] += 1;
@@ -33,7 +34,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 	{
 		int channel = TDC_channel_import[n];
 		float value = TDC_value_import[n];
-		if (channel >= 0 && channel < TDCsize)
+		if (channel > 943 && channel < TDCsize)
 		{
 			if (ChannelCounter[channel] == 0)
 			{
