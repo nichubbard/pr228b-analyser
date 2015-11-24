@@ -144,7 +144,7 @@ void Li2CO3::SlaveBegin(TTree * /*tree*/)
     raw = new TH2F("raw", "", 800, 4, 16, 1000, 0, 10000);
     gated = new TH2F("gated", "", 800, 4, 16, 1000, 0, 10000);
     gated_coinc = new TH2F("gated_coinc", "", 800, 4, 16, 1000, 0, 10000);
-    mpcty = new TH2F("multiplicity", "", 800, 4, 16, 224, 0, 224);
+    mpcty = new TH2F("multiplicity", "", 800, 4, 16, 40, 0, 40);
     fOutput->Add(spectrometer);
     fOutput->Add(silicontime);
     fOutput->Add(raw);
@@ -212,6 +212,7 @@ Bool_t Li2CO3::Process(Long64_t entry)
 
     b_SiliconInfo_SiliconEnergy->GetEntry(entry);
     b_SiliconInfo_DetectorHit->GetEntry(entry);
+    b_SiliconInfo_EnergyBack->GetEntry(entry);
     b_t_Ex->GetEntry(entry);
     b_t_X1pos->GetEntry(entry);
     b_SiliconInfo_SiliconTime->GetEntry(entry);
@@ -290,6 +291,11 @@ Bool_t Li2CO3::Process(Long64_t entry)
         stats_si_total++;
         raw->Fill(Ex, SiliconEnergy[i]);
         if (energy_gate && SiliconEnergy[i] < energy_min)
+        {
+            stats_si_energy_rejected++;
+            continue;
+        }
+        if (energy_gate && EnergyBack[i] < energy_min)
         {
             stats_si_energy_rejected++;
             continue;
@@ -450,28 +456,28 @@ void Li2CO3::Terminate()
     raw = (TH2F*)fOutput->FindObject("raw");
     raw->GetXaxis()->SetTitle("Excitation Energy/Mev");
     raw->GetYaxis()->SetTitle("Silicon Energy/keV");
-    raw->SetTitle("SiE vs X1Pos - No Gates");
+    raw->SetTitle("Silicon Energy vs Excitation Energy - No Silicon Gates");
     raw->Draw("colz");
 
     TCanvas* c1 = new TCanvas("c_gated", "Gated Plot");
     gated = (TH2F*)fOutput->FindObject("gated");
     gated->GetXaxis()->SetTitle("Excitation Energy/Mev");
     gated->GetYaxis()->SetTitle("Silicon Energy/keV");
-    gated->SetTitle("SiE vs X1Pos - TDC Gated");
+    gated->SetTitle("Silicon Energy vs Excitation Energy - TDC Gated");
     gated->Draw("colz");
 
     TCanvas* c2 = new TCanvas("c_gated_coinc", "Coincidence Plot");
     gated_coinc = (TH2F*)fOutput->FindObject("gated_coinc");
     gated_coinc->GetXaxis()->SetTitle("Excitation Energy/Mev");
     gated_coinc->GetYaxis()->SetTitle("Silicon Energy/keV");
-    gated_coinc->SetTitle("SiE vs X1Pos - TDC Gated + Coincidence");
+    gated_coinc->SetTitle("Silicon Energy vs Excitation Energy - TDC Gated + Coincidence");
     gated_coinc->Draw("colz");
 
     TCanvas* c3 = new TCanvas("c_mpcty", "Multiplicity Plot");
     mpcty = (TH2F*)fOutput->FindObject("multiplicity");
     mpcty->GetXaxis()->SetTitle("Excitation Energy/Mev");
     mpcty->GetYaxis()->SetTitle("Multiplicity");
-    mpcty->SetTitle("Silicon Multiplicity vs X1Pos");
+    mpcty->SetTitle("Silicon Multiplicity vs Excitation Energy");
     mpcty->Draw("colz");
 
     stats_spec_total = ((TParameter<int>*)fOutput->
@@ -609,7 +615,7 @@ void Li2CO3::Terminate()
     TH1D* coinc_px = gated_coinc->ProjectionX("_px", firstx, lastx);
     coinc_px->GetYaxis()->SetTitle("Counts");
     TF1* coincfit = new TF1("coincfit", "gaus");
-    coinc_px->Fit("coincfit", "QN", "", x1_oxygen_left, x1_oxygen_right);
+    coinc_px->Fit("coincfit", "LQN", "", x1_oxygen_left, x1_oxygen_right);
     a = coincfit->GetParameter(0);
     mu = coincfit->GetParameter(1);
     sigma = coincfit->GetParameter(2);
@@ -618,7 +624,7 @@ void Li2CO3::Terminate()
     coincfit->SetParameter(0, a);
     coincfit->SetParameter(1, mu);
     coincfit->SetParameter(2, sigma);
-    coinc_px->Fit("coincfit", "QM", "", x1_background_l, x1_background_r);
+    coinc_px->Fit("coincfit", "LQM", "", x1_background_l, x1_background_r);
 
     coinc_px->Draw();
 
