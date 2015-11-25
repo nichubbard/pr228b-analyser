@@ -48,7 +48,6 @@
 #include "X1.h"
 
 #include "GammaData.h"
-#include "HagarSort.h"
 #include "LEPS.h"
 
 #include "RawData.h"
