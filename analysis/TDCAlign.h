@@ -8,16 +8,31 @@
 #ifndef TDCAlign_h
 #define TDCAlign_h
 
-#include <TROOT.h>
 #include <TChain.h>
+#include <TCutG.h>
 #include <TFile.h>
+#include <TH1F.h>
+#include <TROOT.h>
 #include <TSelector.h>
+
+static const int channel_start = 832;
+static const int channel_end = 1008;
+static const size_t channels = channel_end - channel_start;
 
 using std::vector;
 
 class TDCAlign : public TSelector {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+
+   // Input variables
+   bool energy_gate;
+   double energy_min;
+   bool embedPID;
+   TCutG* CUTpid;
+
+   // Output variables
+   TH1F* tdc[channels];
 
    // Declaration of leaf types
    Int_t           runtime;
@@ -42,6 +57,7 @@ public :
    Double_t        pad1lowPT;
    Double_t        pad2hiPT;
    Double_t        pad2lowPT;
+   bool            PIDgood;
    Double_t        X1pos;
    Double_t        X1th;
    Int_t           X1flag;
@@ -212,6 +228,7 @@ public :
    TBranch        *b_t_pulser;   //!
    TBranch        *b_t_X1posC;   //!
    TBranch        *b_t_Ex;   //!
+   TBranch        *b_t_PIDgood; // !
    TBranch        *b_t_T3;   //!
    TBranch        *b_t_rigidity3;   //!
    TBranch        *b_t_theta;   //!
@@ -243,7 +260,11 @@ public :
    TBranch        *b_RawInfo_ADCCalibratedValues;   //!
    TBranch        *b_RawInfo_QDCValues;   //!
 
-   TDCAlign(TTree * /*tree*/ =0) { }
+   TDCAlign(TTree * /*tree*/ =0)
+   {
+      for (size_t i = 0; i < channels; i++)
+         tdc[i] = 0;
+   }
    virtual ~TDCAlign() { }
    virtual Int_t   Version() const { return 2; }
    virtual void    Begin(TTree *tree);
@@ -302,6 +323,7 @@ void TDCAlign::Init(TTree *tree)
    fChain->SetBranchAddress("pad1lowPT", &pad1lowPT, &b_t_pad1lowPT);
    fChain->SetBranchAddress("pad2hiPT", &pad2hiPT, &b_t_pad2hiPT);
    fChain->SetBranchAddress("pad2lowPT", &pad2lowPT, &b_t_pad2lowPT);
+   fChain->SetBranchAddress("PIDgood", &PIDgood, &b_t_PIDgood);
    fChain->SetBranchAddress("X1pos", &X1pos, &b_t_X1pos);
    fChain->SetBranchAddress("X1th", &X1th, &b_t_X1th);
    fChain->SetBranchAddress("X1flag", &X1flag, &b_t_X1flag);

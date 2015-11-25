@@ -24,6 +24,7 @@
 //
 
 #include "TDCAlign.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -31,37 +32,57 @@
 #include <TCutG.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TParameter.h>
 #include <TStyle.h>
 
-static const int channel_start = 832;
-static const int channel_end = 1008;
-static const size_t channels = channel_end - channel_start;
+#include "config.h"
 
 static const int h_bins = 1000;
 static const int h_start = -10000;
 static const int h_end = 10000;
-
-TH1F* tdc[channels];
-TCutG* CUTpid;
-
-using namespace std;
 
 void TDCAlign::Begin(TTree * /*tree*/)
 {
 	// The Begin() function is called at the start of the query.
 	// When running with PROOF Begin() is only called on the client.
 	// The tree argument is deprecated (on PROOF 0 is passed).
+	AnalysisConfig& config = AnalysisConfig::Instance();
 
-	TString option = GetOption();
-	for (size_t i = 0; i < channels; ++i)
+    energy_gate = config.UseEnergyGate();
+    energy_min = config.EnergyMin();
+	embedPID = false;
+	CUTpid = NULL;
+
+    if (config.UsePID())
+    {
+        if (config.PIDfile() == "TREE")
+        {
+            embedPID = true;
+        }
+        else
+        {
+            TFile* pidfile = new TFile(config.PIDfile() + TString(".root"), "OLD");
+            CUTpid = (TCutG*)pidfile->Get("CUTpid");
+            delete pidfile;
+        }
+    }
+
+	if (fInput)
 	{
-		std::stringstream buf;
-		buf << "tdc" << i;
-		tdc[i] = new TH1F(buf.str().c_str(), "", h_bins, h_start, h_end);
+        fInput->Add(
+                new TParameter<bool>("energy_gate", energy_gate)
+                );
+        fInput->Add(
+                new TParameter<double>("energy_min", energy_min)
+                );
+		fInput->Add(
+				new TParameter<bool>("embedPID", embedPID)
+				);
+		if (CUTpid)
+		{
+			fInput->Add(CUTpid);
+		}
 	}
-	TFile* f = TFile::Open("CUTpid1098.root", "OLD");
-	CUTpid = (TCutG*)f->Get("CUTpid");
-	f->Close();
 }
 
 void TDCAlign::SlaveBegin(TTree * /*tree*/)
@@ -72,6 +93,21 @@ void TDCAlign::SlaveBegin(TTree * /*tree*/)
 
 	TString option = GetOption();
 
+	if (fInput)
+	{
+        energy_gate = ((TParameter<bool>*)fInput->FindObject("energy_gate"))->GetVal();
+        energy_min = ((TParameter<double>*)fInput->FindObject("energy_min"))->GetVal();
+		embedPID = ((TParameter<bool>*)fInput->FindObject("embedPID"))->GetVal();
+		CUTpid = (TCutG*)fInput->FindObject("CUTpid");
+	}
+
+	for (size_t i = 0; i < channels; ++i)
+	{
+		std::stringstream buf;
+		buf << "tdc" << i;
+		tdc[i] = new TH1F(buf.str().c_str(), "", h_bins, h_start, h_end);
+		fOutput->Add(tdc[i]);
+	}
 }
 
 Bool_t TDCAlign::Process(Long64_t entry)
@@ -98,17 +134,20 @@ Bool_t TDCAlign::Process(Long64_t entry)
 	b_SiliconInfo_TDCValueFront->GetEntry(entry);
 	b_SiliconInfo_SiliconEnergy->GetEntry(entry);
 	b_t_pad1->GetEntry(entry);
+	b_t_PIDgood->GetEntry(entry);
 
-	if (!CUTpid->IsInside(tof, pad1))
+	if (CUTpid && !CUTpid->IsInside(tof, pad1))
 		return kTRUE;
+	if (embedPID && !PIDgood)
+		return kTRUE;
+
 	for (size_t i = 0; i < TDCChannelFront.size(); ++i)
 	{
-		if (SiliconEnergy[i] < 200)
+		if (energy_gate && SiliconEnergy[i] < energy_min)
 			continue;
 		if (TDCChannelFront[i] >= channel_start && TDCChannelFront[i] < channel_end)
 		{
 			tdc[TDCChannelFront[i] - channel_start]->Fill(
-					//(int)abs(TDCValueFront[i] - tof) % 2675
 					TDCValueFront[i] - tof
 			);
 		}
@@ -132,12 +171,15 @@ void TDCAlign::Terminate()
 	// the results graphically or save the results to file.
 	int bin0 = 0;
 	std::cout << "Alignment bin is: " << bin0 << std::endl;
-	ofstream output;
+	std::ofstream output;
 	output.open("../../output/TDCAlignPR228B.dat");
 	using std::endl;
 	TCanvas* c1 = new TCanvas("silicon times");
 	for (size_t i = 0; i < channels; ++i)
 	{
+		std::stringstream buf;
+		buf << "tdc" << i;
+		tdc[i] = (TH1F*)fOutput->FindObject(buf.str().c_str());
 		tdc[i]->Draw();
 		c1->SaveAs("../../output/align/TDCChannel" + TString::LLtoa(i, 10) + ".png");
 		int bin = tdc[i]->GetMaximumBin();
