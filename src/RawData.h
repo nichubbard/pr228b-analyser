@@ -34,7 +34,6 @@ public :
   int GetTDCValue(int n)	{return TDCValues[n];}
   double GetADCCalibratedValue(int channel) {return ADCCalibratedValues[channel];}
   int GetQDCValue(int channel)	{return QDCValues[channel];}
-//int GetTDC(int channel)	{return TDCValues[channel];}
 
   void SetADCSize(RawData *raw, int asize);
   void SetTDCSize(RawData *raw, int tsize);

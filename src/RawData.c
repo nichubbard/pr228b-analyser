@@ -10,33 +10,19 @@ extern double *TDCOffsets;
 
 RawData::RawData()
 {
-  
+
 }
 
 RawData::~RawData()
 {
-  
+
 }
 
 void RawData::Init(RawData *raw)
 {
-  //printf("ADCsize %d\n",ADCsize);
-    raw->SetADCSize(raw, ADCsize);
-    raw->SetTDCSize(raw, TDCsize);
-    raw->SetQDCSize(raw, QDCsize);
-    /*for(int i=0;i<ADCsize;i++)raw->SetADCValue(i,0);*/
-    /*for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,0);*/
-    
-    /*for(int i=0;i<TDCsize;i++)*/
-    /*{*/
-      /*raw->SetTDCChannel(i,-1);*/
-      /*raw->SetTDCValue(i,0);*/
-    /*}*/
-    
-    /*for(int i=0;i<QDCsize;i++)*/
-    /*{*/
-      /*raw->SetQDCValue(i,0);*/
-    /*}*/
+  raw->SetADCSize(raw, ADCsize);
+  raw->SetTDCSize(raw, TDCsize);
+  raw->SetQDCSize(raw, QDCsize);
 }
 
 void RawData::SetADCSize(RawData *raw, int asize)
@@ -62,16 +48,20 @@ RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float
 {
   RawData *raw = new RawData();
   raw->Init(raw);
-  for(int i=0;i<ADCsize;i++)raw->SetADCValue(i,ADC_import[i]);
-  for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
-  
-  for(int n=0;n<ntdc;n++)
+  for (int i = 0; i < ADCsize; i++)
+    raw->SetADCValue(i, ADC_import[i]);
+  for (int i = 0; i < ADCsize; i++)
+    raw->SetADCCalibratedValue(i, ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
+
+  for (int n = 0; n < ntdc; n++)
   {
-    raw->SetTDCChannel(n,TDC_channel_import[n]);
-    raw->SetTDCValue(n,TDC_value_import[n]);
-	raw->SetTDCCalibratedValue(n, TDC_value_import[n] - TDCOffsets[TDC_channel_import[n]]);
+    raw->SetTDCChannel(n, TDC_channel_import[n]);
+    raw->SetTDCValue(n, TDC_value_import[n]);
+    raw->SetTDCCalibratedValue(n, TDC_value_import[n] - TDCOffsets[TDC_channel_import[n]]);
   }
-  
-  for(int i=0;i<QDCsize;i++)raw->SetQDCValue(i,QDC_import[i]);
+
+  for (int i = 0; i < QDCsize; i++)
+    raw->SetQDCValue(i, QDC_import[i]);
+
   return raw;
 }
