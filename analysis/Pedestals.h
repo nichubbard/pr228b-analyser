@@ -11,6 +11,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TH1.h>
 #include <TSelector.h>
 
 using std::vector;
@@ -18,10 +19,14 @@ using std::vector;
 // Header file for the classes stored in the TTree if any.
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
+static const size_t channels = 224;
 
 class Pedestals : public TSelector {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+
+   // Output variables
+   TH1I* adcs[channels];
 
    // Declaration of leaf types
    Int_t           runtime;

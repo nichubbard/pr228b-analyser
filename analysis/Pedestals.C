@@ -32,12 +32,6 @@
 #include <TH2.h>
 #include <TStyle.h>
 
-using namespace std;
-
-static const size_t channels = 224;
-TH1I* adcs[channels];
-
-
 void Pedestals::Begin(TTree * /*tree*/)
 {
    // The Begin() function is called at the start of the query.
@@ -45,12 +39,6 @@ void Pedestals::Begin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-   for (size_t i = 0; i < channels; ++i)
-   {
-      std::stringstream buf;
-      buf << "adc" << i;
-      adcs[i] = new TH1I(buf.str().c_str(), "", 4096, 0, 4096);
-   }
 }
 
 void Pedestals::SlaveBegin(TTree * /*tree*/)
@@ -60,7 +48,13 @@ void Pedestals::SlaveBegin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-
+   for (size_t i = 0; i < channels; ++i)
+   {
+      std::stringstream buf;
+      buf << "adc" << i;
+      adcs[i] = new TH1I(buf.str().c_str(), "", 4096, 0, 4096);
+      fOutput->Add(adcs[i]);
+   }
 }
 
 Bool_t Pedestals::Process(Long64_t entry)
@@ -105,11 +99,14 @@ void Pedestals::Terminate()
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
 
-   ofstream output;
+   std::ofstream output;
    output.open("../../output/PedestalsPR228B.dat");
    TCanvas* c1 = new TCanvas("ADC Pedestals");
    for (size_t i = 0; i < channels; ++i)
    {
+      std::stringstream buf;
+      buf << "adc" << i;
+      adcs[i] = (TH1I*)fOutput->FindObject(buf.str().c_str());
       adcs[i]->Draw();
       c1->SaveAs("../../output/pedestals/ADCChannel" + TString::LLtoa(i, 10) + ".png");
       int maxBin = adcs[i]->GetMaximumBin();
