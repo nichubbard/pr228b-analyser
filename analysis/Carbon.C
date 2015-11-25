@@ -648,7 +648,7 @@ void Carbon::Terminate()
         << " (" << (coinc_p * 100 / coinc_i ) << "%)" << endl;
     cout << "----------------------------------------------" << endl;
     cout << "Double efficiency        : " << setw(10) <<
-        (efficiency / 100.0) << "%" << endl;
+        (efficiency) << "%" << endl;
     cout << "Single ratio             : " << setw(10) << std::scientific <<
         (gated_p / spec_p) << endl;
     cout << "Double ratio             : " << setw(10) << std::scientific <<
