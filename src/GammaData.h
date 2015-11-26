@@ -31,8 +31,7 @@ class GammaData
   std::vector<double> GammaTheta;
   std::vector<double> GammaPhi;
   std::vector<double> GammaTime;
-  std::vector<std::string> GammaDetectorType;//This is a particular thing in this class which isn't in the SiliconData type. It defines the type of the gamma detector. E.g. HPGeClover, HPGe, Hagar, NaI, CsI, Eyeball, BGO, Kudu, peacock.
-  //It's a STRING... i.e., type what you want in there and then test for that later on
+  std::vector<std::string> GammaDetectorType;
 
   //There should follow some diagnostic values which will be added for The Greater Good (The Greater Good).
   std::vector<int> GammaADCChannel;
