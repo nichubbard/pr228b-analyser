@@ -7,7 +7,11 @@ extern int *GoodChannelCounter;
 
 #include <cstring>
 
-//This code is mainly dealing with TDC data in ancillary detector channels, not with the main focal plane TDC stuff which is dealt with in f-plane.c and was written by Retief. I (Phil) know very little about how that bit works and so will try to avoid doing anything here to break that.
+// This code is mainly dealing with TDC data in ancillary detector channels,
+// not with the main focal plane TDC stuff which is dealt with in f-plane.c
+// and was written by Retief.
+// I (Phil) know very little about how that bit works and so will try to avoid
+// doing anything here to break that.
 
 void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
@@ -30,7 +34,8 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 		}
 	}
 
-	for(int n=0;n<ntdc;n++)//Loop over and dispose of the simple events (the single hit events)
+	//Loop over and dispose of the simple events (the single hit events)
+	for(int n=0;n<ntdc;n++)
 	{
 		int channel = TDC_channel_import[n];
 		float value = TDC_value_import[n];
@@ -39,17 +44,21 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 			if (ChannelCounter[channel] == 0)
 			{
 				printf("Something has gone wrong - the number of counts for channel %d is expected to be zero but something (%d) is seen.\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
-				for(int nn=0;nn<ntdc;nn++){printf("Dump: \t ntdc: %d \t n: %d \t TDC_channel_import[n]: %d \t ChannelCounter[TDC_channel_import[n]]: %d \t TDC_value_import[n]: %f \n",
-						ntdc,nn,TDC_channel_import[nn],ChannelCounter[TDC_channel_import[nn]],TDC_value_import[nn]);}	
+				for (int nn = 0; nn < ntdc; nn++) {
+					printf("Dump: \t ntdc: %d \t n: %d \t TDC_channel_import[n]: %d \t ChannelCounter[TDC_channel_import[n]]: %d \t TDC_value_import[n]: %f \n",
+						ntdc,nn,TDC_channel_import[nn],ChannelCounter[TDC_channel_import[nn]],TDC_value_import[nn]);
+				}
 			}
 			else if (ChannelCounter[channel] == 1)
 			{
-				//The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
+				// The reason that we do this this way is to look at how many
+				// events fall outside the good beampulse - only when we have
+				// multiple hits do we need to worry about the multiple hits
+				// and this should be quicker
 				SetChannel(channel);
 				SetValue(value);
 				SetMult(ChannelCounter[channel]);
 				TDChits++;
-				//printf("\n ChannelCounter[%d]==1 \n",TDC_channel_import[n]);
 			}
 			else if (ChannelCounter[channel] > 1 && GoodChannelCounter[channel] == 1)
 			{
@@ -62,7 +71,6 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 					ChannelCounter[channel] *= -1;
 				}
 			}
-			//       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==2
 			else if (ChannelCounter[channel] > 1 && GoodChannelCounter[channel] > 1)
 			{
 				printf("The number of TDC hits within the user-defined 'good pulse' is greater than 1; the number of hits is %d. The code currently doesn't deal with this.\n",GoodChannelCounter[TDC_channel_import[n]]);
@@ -84,23 +92,14 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 	}
 
 	SetHits(TDChits);
-	//delete [] ChannelCounter;
-	//delete [] GoodChannelCounter;
-	//printf("mTDC: L75\n");
 }
 
 multiTDC::multiTDC()
 {
-	//   printf("multiTDC\n");
-	//   printf("\n multiTDC.c:L74 \n");
-	//SetHits(TDChits);//printf("\n multiTDC.c:L75 \n");
-	//delete ChannelCounter;//printf("\n multiTDC.c:L76 \n");
-	//delete GoodChannelCounter;printf("\n multiTDC.c:L77 \n");
 }
 
 multiTDC::~multiTDC()
 {
-	//printf("~multiTDC()\n");
 }
 
 void multiTDC::PrintEvent()
@@ -130,3 +129,4 @@ unsigned int multiTDC::SizeOfEvent()
 {
 	return TDChits;
 }
+
