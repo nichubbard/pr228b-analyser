@@ -435,7 +435,7 @@ void Carbon::Terminate()
     spectrometer = (TH1F*)fOutput->FindObject("spectrometer");
     spectrometer->GetXaxis()->SetTitle("Excitation Energy/MeV");
     spectrometer->GetYaxis()->SetTitle("Counts");
-    spectrometer->SetTitle("Spectrometer Position");
+    spectrometer->SetTitle("Excitation Energy");
     spectrometer->Draw("");
 
     TCanvas* cst = new TCanvas("c_silicontime", "Silicon Time");
