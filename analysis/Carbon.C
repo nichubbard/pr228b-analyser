@@ -217,6 +217,7 @@ Bool_t Carbon::Process(Long64_t entry)
 
     b_SiliconInfo_SiliconEnergy->GetEntry(entry);
     b_SiliconInfo_DetectorHit->GetEntry(entry);
+    b_SiliconInfo_EnergyBack->GetEntry(entry);
     b_t_Ex->GetEntry(entry);
     b_t_X1pos->GetEntry(entry);
     b_SiliconInfo_SiliconTime->GetEntry(entry);
@@ -299,10 +300,11 @@ Bool_t Carbon::Process(Long64_t entry)
             stats_si_energy_rejected++;
             continue;
         }
-        if (DetectorHit[i] < 5)
+        if (energy_gate && EnergyBack[i] < energy_min)
+        {
+            stats_si_energy_rejected++;
             continue;
-        if (DetectorHit[i] == 6)
-            continue;
+        }
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
         if(!tdc_gate || (time >= tdc_gate_left && time <= tdc_gate_right))
