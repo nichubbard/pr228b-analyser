@@ -1,11 +1,11 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.2)
 include (CMakeDependentOption)
 project (analyzer)
 
 set (MIDASSYS $ENV{MIDASSYS})
 
-set (sources adc.c ame.c analyzer.c f-plane.c
-    multiTDC.c Parameters.c qdc.c scaler.c)
+set (sources adc.cpp ame.cpp analyzer.cpp f-plane.cpp
+    multiTDC.cpp Parameters.cpp qdc.cpp scaler.cpp)
 
 option (ENABLE_GAMMA
     "Support sorting gamma data into GammaData, reconfigure to enable specific detectors" OFF)
@@ -27,25 +27,25 @@ cmake_dependent_option (ENABLE_SILICON_MMM
     "ENABLE_SILICON" OFF)
 
 if (ENABLE_GAMMA)
-  set (sources ${sources} GammaData.c)
+  set (sources ${sources} GammaData.cpp)
 endif()
 if (ENABLE_GAMMA_LEPS)
-  set (sources ${sources} LEPS.c)
+  set (sources ${sources} LEPS.cpp)
 endif()
 if (ENABLE_RAW)
-  set (sources ${sources} RawData.c)
+  set (sources ${sources} RawData.cpp)
 endif()
 if (ENABLE_SILICON)
-  set (sources ${sources} SiliconData.c)
+  set (sources ${sources} SiliconData.cpp)
 endif()
 if (ENABLE_SILICON_MMM)
-  set (sources ${sources} MMM.c)
+  set (sources ${sources} MMM.cpp)
 endif()
 if (ENABLE_SILICON_W1)
-  set (sources ${sources} W1.c)
+  set (sources ${sources} W1.cpp)
 endif()
 if (ENABLE_SILICON_X1)
-  set (sources ${sources} X1.c)
+  set (sources ${sources} X1.cpp)
 endif()
 
 SET(full_source "")
@@ -62,8 +62,6 @@ configure_file (
 include_directories("${PROJECT_BINARY_DIR}")
 
 add_executable(analyzer ${sources})
-
-SET(CMAKE_C_COMPILER ${CMAKE_CXX_COMPILER})
 
 if (NOT DEFINED MIDASSYS)
     message(FATAL_ERROR "Missing definition of MIDAS variables")
