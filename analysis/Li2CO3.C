@@ -435,6 +435,7 @@ void Li2CO3::Terminate()
     gStyle->SetOptStat(0);
     TCanvas* csp = new TCanvas("c_spectrometer", "Excitation Energy");
     spectrometer = (TH1F*)fOutput->FindObject("spectrometer");
+    gDirectory->Add(spectrometer);
     spectrometer->GetXaxis()->SetTitle("Excitation Energy/Mev");
     spectrometer->GetYaxis()->SetTitle("Counts");
     spectrometer->SetTitle("Excitation Energy");
@@ -442,6 +443,7 @@ void Li2CO3::Terminate()
 
     TCanvas* cst = new TCanvas("c_silicontime", "Silicon Time");
     silicontime = (TH1F*)fOutput->FindObject("silicontime");
+    gDirectory->Add(silicontime);
     silicontime->GetXaxis()->SetTitle("Silicon Time/100ps");
     silicontime->GetYaxis()->SetTitle("Counts");
     silicontime->SetTitle("Silicon Time");
@@ -454,6 +456,7 @@ void Li2CO3::Terminate()
 
     TCanvas* craw = new TCanvas("c_raw", "Ungated Plot");
     raw = (TH2F*)fOutput->FindObject("raw");
+    gDirectory->Add(raw);
     raw->GetXaxis()->SetTitle("Excitation Energy/Mev");
     raw->GetYaxis()->SetTitle("Silicon Energy/keV");
     raw->SetTitle("Silicon Energy vs Excitation Energy - No Silicon Gates");
@@ -461,6 +464,7 @@ void Li2CO3::Terminate()
 
     TCanvas* c1 = new TCanvas("c_gated", "Gated Plot");
     gated = (TH2F*)fOutput->FindObject("gated");
+    gDirectory->Add(gated);
     gated->GetXaxis()->SetTitle("Excitation Energy/Mev");
     gated->GetYaxis()->SetTitle("Silicon Energy/keV");
     gated->SetTitle("Silicon Energy vs Excitation Energy - TDC Gated");
@@ -468,6 +472,7 @@ void Li2CO3::Terminate()
 
     TCanvas* c2 = new TCanvas("c_gated_coinc", "Coincidence Plot");
     gated_coinc = (TH2F*)fOutput->FindObject("gated_coinc");
+    gDirectory->Add(gated_coinc);
     gated_coinc->GetXaxis()->SetTitle("Excitation Energy/Mev");
     gated_coinc->GetYaxis()->SetTitle("Silicon Energy/keV");
     gated_coinc->SetTitle("Silicon Energy vs Excitation Energy - TDC Gated + Coincidence");
@@ -475,6 +480,7 @@ void Li2CO3::Terminate()
 
     TCanvas* c3 = new TCanvas("c_mpcty", "Multiplicity Plot");
     mpcty = (TH2F*)fOutput->FindObject("multiplicity");
+    gDirectory->Add(mpcty);
     mpcty->GetXaxis()->SetTitle("Excitation Energy/Mev");
     mpcty->GetYaxis()->SetTitle("Multiplicity");
     mpcty->SetTitle("Silicon Multiplicity vs Excitation Energy");
