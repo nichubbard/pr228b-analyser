@@ -1470,6 +1470,10 @@ void PrintParameters()
   {
     printf(" Reaction: %s(%s,%s)%s\n", elements[1].c_str(), elements[0].c_str(), elements[2].c_str(), elements[3].c_str());
   }
+  if (PulseLimits[0] != PulseLimits[1])
+  {
+    printf(" TDC Pulse Limits: %d to %d\n", PulseLimits[0], PulseLimits[1]);
+  }
   printf("-------------------------------------------------------\n");
   printf(" VDCs: 1 is %s-type, 2 is %s-type\n",
       VDC1_new ? "new" : "old", VDC2_new ? "new" : "old");
