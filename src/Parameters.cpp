@@ -74,6 +74,8 @@ double theta3 = 0; //Scattering angle for the light ion in the spectrometer - de
 
 TCutG* CUTpid;
 
+static bool cEx, cY1, cThSCAT, cADC, cTDC, cPedestals;
+
 void ParameterInit()
 {
 #ifdef VERBOSE
@@ -81,6 +83,7 @@ void ParameterInit()
 #endif
   masses = new double[4];
   elements = new std::string[4];
+  cEx = cY1 = cThSCAT = cADC = cTDC = cPedestals = false;
   PulseLimitsInit();
   ReadConfiguration();
   ADCInit();
@@ -442,6 +445,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   }
   else
   {
+    cADC = true;
     CalibInput.open(CalibFile.c_str());
 
     if (CalibInput.is_open())
@@ -492,6 +496,7 @@ void ReadADCPedestals(std::string CalibFile)
   }
   else
   {
+    cPedestals = true;
     CalibInput.open(CalibFile.c_str());
 
     if (CalibInput.is_open())
@@ -540,6 +545,7 @@ void ReadTDCCalibrationParameters(std::string CalibFile)
   }
   else
   {
+    cTDC = true;
     CalibInput.open(CalibFile.c_str());
 
     if (CalibInput.is_open())
@@ -875,6 +881,7 @@ void ReadConfiguration()
           XThetaCorr = new double[NXThetaCorr];
           for (int c = 0; c < NXThetaCorr; c++) XThetaCorr[c] = 0;
           ThSCATCorrectionParametersRead = true;
+          cThSCAT = true;
         }
         else if (LineBuffer.compare(0,19,"InelasticScattering") == 0)
         {
@@ -981,6 +988,7 @@ void ReadConfiguration()
           XRigidityPars = new double[NXRigidityPars];
           for (int c = 0; c < NXRigidityPars;c++) XRigidityPars[c] = 0;
           XRigidityParametersRead = true;
+          cEx = true;
         }
         else if (LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
         {
@@ -992,6 +1000,7 @@ void ReadConfiguration()
           XY1Corr = new double[NXY1Corr];
           for (int c = 0; c < NXY1Corr; c++) XY1Corr[c] = 0;
           Y1CorrectionParametersRead = true;
+          cY1 = true;
         }
         else if (LineBuffer.compare(0,12,"PulseLimits") == 0)
         {
@@ -1460,6 +1469,7 @@ void PrintParameters()
   printf(" ADC: %d modules, %d channels\n", ADCModules, ADCsize);
   printf(" TDC: %d modules, %d channels\n", TDCModules, TDCsize);
   printf(" QDC: %d modules, %d channels\n", 1, QDCsize);
+
   printf("-------------------------------------------------------\n");
   printf(" Beam: %.0f MeV %s at %.0f deg\n", T1, elements[0].c_str(), theta3);
   if (TestInelastic && !elements[0].empty() && !elements[1].empty())
@@ -1472,8 +1482,26 @@ void PrintParameters()
   }
   if (PulseLimits[0] != PulseLimits[1])
   {
-    printf(" TDC Pulse Limits: %d to %d\n", PulseLimits[0], PulseLimits[1]);
+    printf(" TDC pulse limits: %d to %d\n", PulseLimits[0], PulseLimits[1]);
   }
+  std::vector<std::string> calibs;
+  if (cEx) calibs.push_back("Ex");
+  if (cY1) calibs.push_back("Y1");
+  if (cThSCAT) calibs.push_back("ThSCAT");
+  if (cADC) calibs.push_back("ADC");
+  if (cTDC) calibs.push_back("TDC");
+  if (cPedestals) calibs.push_back("Pedestals");
+  if (!calibs.empty())
+  {
+    printf(" Calibrations: ");
+    size_t size = calibs.size();
+    for (size_t i = 0; i < size - 1; ++i)
+    {
+      printf("%s, ", calibs[i].c_str());
+    }
+    printf("%s\n", calibs[size - 1].c_str());
+  }
+
   printf("-------------------------------------------------------\n");
   printf(" VDCs: 1 is %s-type, 2 is %s-type\n",
       VDC1_new ? "new" : "old", VDC2_new ? "new" : "old");
@@ -1501,6 +1529,7 @@ void PrintParameters()
     if (NumberOfLEPS > 0) printf("%d LEPS ", NumberOfLEPS);
     printf("\n");
   }
+
   printf("-------------------------------------------------------\n");
   printf(" ROOT branches: f-plane");
 #if defined(ENABLE_GAMMA) || defined(ENABLE_RAW) || defined(ENABLE_SILICON)
@@ -1525,6 +1554,7 @@ void PrintParameters()
   printf("SiliconData");
 #endif
   printf("\n");
+
   printf("-------------------------------------------------------\n");
   printf("\n");
 }
