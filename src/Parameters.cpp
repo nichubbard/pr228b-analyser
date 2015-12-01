@@ -86,14 +86,18 @@ void ParameterInit()
   ADCInit();
   QDCInit();
   PrintParameters();
+#ifdef VERBOSE
   printf("Finished initialising parameters - to the sorting!\n");
+#endif
 }
 
 // This is called after the number of MMM detectors is found from the config file
 void MMMNumberInit()
 {
+#ifdef VERBOSE
   if (NumberOfMMM > 0)
     printf("Using %d MMMs\n", NumberOfMMM);
+#endif
 
   MMMADCChannelLimits = new int*[NumberOfMMM];
 
@@ -250,8 +254,10 @@ void W1TDCChannelsInit(int det, std::string side,int start, int stop)
 void X1NumberInit()
 {
   X1ADCChannelLimits = new int*[NumberOfX1];
+#ifdef VERBOSE
   if (NumberOfX1 > 0)
     printf("Using %d X1s\n", NumberOfX1);
+#endif
 
   for (int i = 0; i < NumberOfX1; i++)
   {
@@ -344,8 +350,10 @@ void HagarTDCChannelsInit(int start, int stop)
 void LEPSNumberInit()
 {
   LEPSADCChannelLimits = new int[NumberOfLEPS];
+#ifdef VERBOSE
   if (NumberOfLEPS > 0)
     printf("Using %d LEPSs\n", NumberOfLEPS);
+#endif
 
   for (int i = 0;i < NumberOfLEPS; i++)
   {
@@ -426,9 +434,11 @@ void ReadCalibrationParameters(std::string CalibFile)
   std::ifstream CalibInput;
   if (CalibFile.compare(0,6,"ignore") == 0)
   {
+#ifdef VERBOSE
     printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
     for (int i = 0; i < 32 * ADCModules; i++)
       printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+#endif
   }
   else
   {
@@ -474,9 +484,11 @@ void ReadADCPedestals(std::string CalibFile)
   std::ifstream CalibInput;
   if (CalibFile.compare(0,6,"ignore") == 0)
   {
+#ifdef VERBOSE
     printf("\n ********** Ignoring ADC pedestals: pedestals are 0 **********\n");
     for (int i = 0; i < 32 * ADCModules; i++)
       printf("ADCPedestals[%d]: %d\n",i,ADCPedestals[i]);
+#endif
   }
   else
   {
@@ -520,9 +532,11 @@ void ReadTDCCalibrationParameters(std::string CalibFile)
   std::ifstream CalibInput;
   if (CalibFile.compare(0,6,"ignore") == 0)
   {
+#ifdef VERBOSE
     printf("\n ********** Ignoring TDC offsets: offsets are 0 **********\n");
     for (int i = 0; i < 128 * TDCModules; i++)
       printf("TDCOffsets[%d]: %f\n",i,TDCOffsets[i]);
+#endif
   }
   else
   {
@@ -784,12 +798,16 @@ void ReadConfiguration()
           input >> LineBuffer;
           if (LineBuffer.compare(0,3,"new") == 0)
           {
+#ifdef VERBOSE
             printf("VDC1 is a new-type wire chamber\n");
+#endif
             VDC1_new = true;
           }
           else if (LineBuffer.compare(0,3,"old") == 0)
           {
+#ifdef VERBOSE
             printf("VDC1 is an old-type wire chamber\n");
+#endif
             VDC1_new = false;
           }
         }
@@ -798,19 +816,25 @@ void ReadConfiguration()
           input >> LineBuffer;
           if (LineBuffer.compare(0,3,"new") == 0)
           {
+#ifdef VERBOSE
             printf("VDC2 is a new-type wire chamber\n");
+#endif
             VDC2_new = true;
           }
           else if (LineBuffer.compare(0,3,"old") == 0)
           {
+#ifdef VERBOSE
             printf("VDC2 is an old-type wire chamber\n");
+#endif
             VDC2_new = false;
           }
         }
         else if (LineBuffer.compare(0,7,"PIDfile") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using PID file: %s\n", LineBuffer.c_str());
+#endif
           TFile* f = new TFile(LineBuffer.c_str(), "OLD");
           CUTpid = (TCutG*)f->Get("CUTpid");
           delete f;
@@ -820,25 +844,33 @@ void ReadConfiguration()
         else if (LineBuffer.compare(0,15,"CalibrationFile") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using ADC calibration file: %s\n",LineBuffer.c_str());
+#endif
           ReadCalibrationParameters(LineBuffer);
         }
         else if (LineBuffer.compare(0,18,"TDCCalibrationFile") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using TDC alignment file: %s\n",LineBuffer.c_str());
+#endif
           ReadTDCCalibrationParameters(LineBuffer);
         }
         else if (LineBuffer.compare(0,15,"ADCPedestalFile") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using ADC pedestal file: %s\n",LineBuffer.c_str());
+#endif
           ReadADCPedestals(LineBuffer);
         }
         else if (LineBuffer.compare(0,21,"ThSCATCorrectionTerms") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using %d terms for the ThSCAT position correction\n",atoi(LineBuffer.c_str()));
+#endif
           NXThetaCorr = atoi(LineBuffer.c_str());
           XThetaCorr = new double[NXThetaCorr];
           for (int c = 0; c < NXThetaCorr; c++) XThetaCorr[c] = 0;
@@ -850,30 +882,40 @@ void ReadConfiguration()
           if (LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
           else if (LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
           else TestInelastic = true;
+#ifdef VERBOSE
           if (TestInelastic) printf(" Reaction is inelastic scattering\n");
+#endif
         }
         else if (LineBuffer.compare(0,5,"mass1") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf(" Beam  :  %f MeV/c**2\n",atof(LineBuffer.c_str()));
+#endif
           masses[0] = atof(LineBuffer.c_str());//Be careful... the index number is different to the particle number...
         }
         else if (LineBuffer.compare(0,5,"mass2") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf(" Target: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+#endif
           masses[1] = atof(LineBuffer.c_str());
         }
         else if (LineBuffer.compare(0,5,"mass3") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("mass3: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+#endif
           masses[2] = atof(LineBuffer.c_str());
         }
         else if (LineBuffer.compare(0,5,"mass4") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("mass4: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+#endif
           masses[3] = atof(LineBuffer.c_str());
         }
         else if (LineBuffer.compare(0,5,"Beam") == 0)
@@ -881,46 +923,60 @@ void ReadConfiguration()
           input >> LineBuffer;
           elements[0] = LineBuffer;
           masses[0] = AmeElementMass(LineBuffer);
+#ifdef VERBOSE
           printf(" Beam    : %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[0]);
+#endif
         }
         else if (LineBuffer.compare(0,6,"Target") == 0)
         {
           input >> LineBuffer;
           elements[1] = LineBuffer;
           masses[1] = AmeElementMass(LineBuffer);
+#ifdef VERBOSE
           printf(" Target  : %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[1]);
+#endif
         }
         else if (LineBuffer.compare(0,6,"Recoil") == 0)
         {
           input >> LineBuffer;
           elements[3] = LineBuffer;
           masses[3] = AmeElementMass(LineBuffer);
+#ifdef VERBOSE
           printf(" Recoil  : %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[2]);
+#endif
         }
         else if (LineBuffer.compare(0,8,"Ejectile") == 0)
         {
           input >> LineBuffer;
           elements[2] = LineBuffer;
           masses[2] = AmeElementMass(LineBuffer);
+#ifdef VERBOSE
           printf(" Ejectile: %s (%f MeV/c^2)\n", LineBuffer.c_str(), masses[3]);
+#endif
         }
         else if (LineBuffer.compare(0,10,"BeamEnergy") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Excitation energy settings:\n");
           printf(" Beam energy: %f MeV\n",atof(LineBuffer.c_str()));
+#endif
           T1 = atof(LineBuffer.c_str());
         }
         else if (LineBuffer.compare(0,15,"ScatteringAngle") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf(" Scattering angle: %.0f degrees\n",atof(LineBuffer.c_str()));
+#endif
           theta3 = atof(LineBuffer.c_str());
         }
         else if (LineBuffer.compare(0,19,"RigidityCalibration") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using %d parameters for the correction X position -> Rigidity calibration\n",atoi(LineBuffer.c_str()));
+#endif
           NXRigidityPars = atoi(LineBuffer.c_str());
           XRigidityPars = new double[NXRigidityPars];
           for (int c = 0; c < NXRigidityPars;c++) XRigidityPars[c] = 0;
@@ -929,7 +985,9 @@ void ReadConfiguration()
         else if (LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
         {
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Using %d terms for the Y1 position correction\n",atoi(LineBuffer.c_str()));
+#endif
           NXY1Corr = atoi(LineBuffer.c_str());
           XY1Corr = new double[NXY1Corr];
           for (int c = 0; c < NXY1Corr; c++) XY1Corr[c] = 0;
@@ -941,7 +999,9 @@ void ReadConfiguration()
           PulseLimits[0] = atoi(LineBuffer.c_str());
           input >> LineBuffer;
           PulseLimits[1] = atoi(LineBuffer.c_str());
+#ifdef VERBOSE
           printf("Good pulse limits: %d - %d\n", PulseLimits[0], PulseLimits[1]);
+#endif
         }
         else if (LineBuffer.compare(0,9,"ConfigEnd") == 0)
         {
@@ -971,10 +1031,14 @@ void ReadConfiguration()
         }
         else
         {
+#ifdef VERBOSE
           printf(" Parameter number: %d\t",atoi(LineBuffer.c_str()));
+#endif
           npar = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf(" Parameter value: %e\n",atof(LineBuffer.c_str()));
+#endif
           valpar = atof(LineBuffer.c_str());
           XThetaCorr[npar] = valpar;
         }
@@ -994,10 +1058,14 @@ void ReadConfiguration()
         }
         else
         {
+#ifdef VERBOSE
           printf(" Parameter number: %d\t",atoi(LineBuffer.c_str()));
+#endif
           npar = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf(" Parameter value: %e\n",atof(LineBuffer.c_str()));
+#endif
           valpar = atof(LineBuffer.c_str());
           XY1Corr[npar] = valpar;
         }
@@ -1017,10 +1085,14 @@ void ReadConfiguration()
         }
         else
         {
+#ifdef VERBOSE
           printf(" Parameter number: %d\t",atoi(LineBuffer.c_str()));
+#endif
           npar = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf(" Parameter value: %e\n",atof(LineBuffer.c_str()));
+#endif
           XRigidityPars[npar] = atof(LineBuffer.c_str());
         }
       }
@@ -1040,16 +1112,24 @@ void ReadConfiguration()
         }
         else if (!ExplicitMMM || NumberOfMMM > 0)
         {
+#ifdef VERBOSE
           printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Side: %s\t",LineBuffer.c_str());
+#endif
           side = LineBuffer;
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
 
           MMMADCChannelsInit(num, side, start, stop);
@@ -1071,16 +1151,24 @@ void ReadConfiguration()
         }
         else if (!ExplicitMMM || NumberOfMMM > 0)
         {
+#ifdef VERBOSE
           printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Side: %s\t",LineBuffer.c_str());
+#endif
           side = LineBuffer;
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
 
           MMMTDCChannelsInit(num, side, start, stop);
@@ -1102,16 +1190,24 @@ void ReadConfiguration()
         }
         else if (!ExplicitW1 || NumberOfW1 > 0)
         {
+#ifdef VERBOSE
           printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Side: %s\t",LineBuffer.c_str());
+#endif
           side = LineBuffer;
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
 
           W1ADCChannelsInit(num, side, start, stop);
@@ -1133,16 +1229,24 @@ void ReadConfiguration()
         }
         else if (!ExplicitW1 || NumberOfW1 > 0)
         {
+#ifdef VERBOSE
           printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Side: %s\t",LineBuffer.c_str());
+#endif
           side = LineBuffer;
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
 
           W1TDCChannelsInit(num, side, start, stop);
@@ -1164,16 +1268,24 @@ void ReadConfiguration()
         }
         else if (!ExplicitX1 || NumberOfX1 > 0)
         {
+#ifdef VERBOSE
           printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Side: %s\t",LineBuffer.c_str());
+#endif
           side = LineBuffer;
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
 
           X1ADCChannelsInit(num, side, start, stop);
@@ -1195,16 +1307,24 @@ void ReadConfiguration()
         }
         else if (!ExplicitX1 || NumberOfX1 > 0)
         {
+#ifdef VERBOSE
           printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Side: %s\t",LineBuffer.c_str());
+#endif
           side = LineBuffer;
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
 
           X1TDCChannelsInit(num, side, start, stop);
@@ -1224,10 +1344,14 @@ void ReadConfiguration()
         }
         else if (!ExplicitLEPS || NumberOfLEPS > 0)
         {
+#ifdef VERBOSE
           printf(" [ADC] Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Channel: %d\n",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
 
           LEPSADCChannelsInit(num, start);
@@ -1247,10 +1371,14 @@ void ReadConfiguration()
         }
         else if (!ExplicitLEPS || NumberOfLEPS > 0)
         {
+#ifdef VERBOSE
           printf(" [TDC] Detector number %d\t",atoi(LineBuffer.c_str()));
+#endif
           num = atoi(LineBuffer.c_str());
           input>> LineBuffer;
+#ifdef VERBOSE
           printf("Channel: %d\n",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
 
           LEPSTDCChannelsInit(num, start);
@@ -1271,11 +1399,15 @@ void ReadConfiguration()
         }
         else
         {
+#ifdef VERBOSE
           printf("HagarADCChannelRead: \t");
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
           HagarADCChannelsInit(start, stop);
         }
@@ -1294,11 +1426,15 @@ void ReadConfiguration()
         }
         else
         {
+#ifdef VERBOSE
           printf("HagarTDCChannelRead: \t");
           printf("Start: %d\t",atoi(LineBuffer.c_str()));
+#endif
           start = atoi(LineBuffer.c_str());
           input >> LineBuffer;
+#ifdef VERBOSE
           printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+#endif
           stop = atoi(LineBuffer.c_str());
           HagarTDCChannelsInit(start, stop);
         }
