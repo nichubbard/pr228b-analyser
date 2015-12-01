@@ -654,7 +654,7 @@ void ReadConfiguration()
       if (!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !X1ADCChannelRead && !X1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !LEPSADCRead && !LEPSTDCRead)
       {
         input >> LineBuffer;
-        if (LineBuffer.compare(0,1,"%") == 0) {
+        if (LineBuffer.compare(0,1,"#") == 0) {
           input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
         }
         else if (LineBuffer.compare(0,11,"NumberOfMMM") == 0)
@@ -962,7 +962,10 @@ void ReadConfiguration()
         int npar = -1;
         double valpar = 0;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead)
         {
           ThSCATCorrectionParametersRead = false;
         }
@@ -982,7 +985,10 @@ void ReadConfiguration()
         int npar = -1;
         double valpar = 0;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,20,"EndY1CorrectionTerms") == 0 && Y1CorrectionParametersRead)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,20,"EndY1CorrectionTerms") == 0 && Y1CorrectionParametersRead)
         {
           Y1CorrectionParametersRead = false;
         }
@@ -1002,7 +1008,10 @@ void ReadConfiguration()
         int npar = -1;
         double valpar = 0;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,22,"EndRigidityCalibration") == 0 && XRigidityParametersRead)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,22,"EndRigidityCalibration") == 0 && XRigidityParametersRead)
         {
           XRigidityParametersRead = false;
         }
@@ -1021,7 +1030,10 @@ void ReadConfiguration()
         int num = 0, start = -1, stop = -1;
         std::string side = "";
         input >> LineBuffer;
-        if (LineBuffer.compare(0,14,"MMMADCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,14,"MMMADCChannels") == 0)
         {
           if (MMMADCChannelRead == true)
             MMMADCChannelRead = false;
@@ -1049,7 +1061,10 @@ void ReadConfiguration()
         int num = 0, start = -1, stop = -1;
         std::string side = "";
         input >> LineBuffer;
-        if (LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
         {
           if (MMMTDCChannelRead == true)
             MMMTDCChannelRead = false;
@@ -1077,7 +1092,10 @@ void ReadConfiguration()
         int num = 0, start = -1, stop = -1;
         std::string side = "";
         input >> LineBuffer;
-        if (LineBuffer.compare(0,13,"W1ADCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,13,"W1ADCChannels") == 0)
         {
           if (W1ADCChannelRead==true)
             W1ADCChannelRead = false;
@@ -1105,7 +1123,10 @@ void ReadConfiguration()
         int num = 0, start = -1, stop = -1;
         std::string side = "";
         input >> LineBuffer;
-        if (LineBuffer.compare(0,14,"W1TDCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,14,"W1TDCChannels") == 0)
         {
           if (W1TDCChannelRead == true)
             W1TDCChannelRead = false;
@@ -1133,7 +1154,10 @@ void ReadConfiguration()
         int num = 0, start = -1, stop = -1;
         std::string side = "";
         input >> LineBuffer;
-        if (LineBuffer.compare(0,13,"X1ADCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,13,"X1ADCChannels") == 0)
         {
           if (X1ADCChannelRead == true)
             X1ADCChannelRead = false;
@@ -1161,7 +1185,10 @@ void ReadConfiguration()
         int num = 0, start = -1, stop = -1;
         std::string side = "";
         input >> LineBuffer;
-        if (LineBuffer.compare(0,14,"X1TDCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,14,"X1TDCChannels") == 0)
         {
           if (X1TDCChannelRead == true)
             X1TDCChannelRead = false;
@@ -1188,7 +1215,10 @@ void ReadConfiguration()
       {
         int num = 0, start = -1;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,15,"LEPSADCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,15,"LEPSADCChannels") == 0)
         {
           LEPSADCRead = !LEPSADCRead;
         }
@@ -1208,7 +1238,10 @@ void ReadConfiguration()
       {
         int num = 0, start = -1;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,15,"LEPSTDCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,15,"LEPSTDCChannels") == 0)
         {
           LEPSTDCRead = !LEPSTDCRead;
         }
@@ -1228,7 +1261,10 @@ void ReadConfiguration()
       {
         int start = -1, stop = -1;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,16,"HagarADCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,16,"HagarADCChannels") == 0)
         {
           if (HagarADCChannelRead == true)
             HagarADCChannelRead = false;
@@ -1249,7 +1285,10 @@ void ReadConfiguration()
       {
         int start = -1, stop = -1;
         input >> LineBuffer;
-        if (LineBuffer.compare(0,16,"HagarTDCChannels") == 0)
+        if (LineBuffer.compare(0,1,"#") == 0) {
+          input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        }
+        else if (LineBuffer.compare(0,16,"HagarTDCChannels") == 0)
         {
           if (HagarTDCChannelRead==true)HagarTDCChannelRead = false;
         }
