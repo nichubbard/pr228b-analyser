@@ -1,0 +1,7 @@
+GammaData.h
+RawData.h
+SiliconData.h
+analyzer
+*.d
+*.so
+*.pcm
