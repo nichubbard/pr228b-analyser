@@ -14,6 +14,7 @@ double rigidities[] = {
 
 void RetuneLithium()
 {
+    chain.SetProof(0);
     // Get X1position graph from the Spectra.C macro
     X1pos((TCut)"Ex > 4 && Ex < 13");
     TH1F* h_X1 = (TH1F*)gDirectory->FindObject("h_X1");
