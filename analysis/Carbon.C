@@ -432,7 +432,7 @@ void Carbon::Terminate()
     // a query. It always runs on the client, it can be used to present
     // the results graphically or save the results to file.
     //
-    gStyle->SetOptStat(0);
+    //gStyle->SetOptStat(0);
     TCanvas* csp = new TCanvas("c_spectrometer", "Excitation Energy");
     spectrometer = (TH1F*)fOutput->FindObject("spectrometer");
     gDirectory->Add(spectrometer);
