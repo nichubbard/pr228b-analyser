@@ -111,7 +111,7 @@ double W1PhiCalc(int FrontChannel, int BackChannel)
   return result;
 }
 
-static const double sigma = 200.;
+static const double sigma = 100.;
 
 bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si)
 {
@@ -128,7 +128,7 @@ bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, doub
     {
       double diff = FrontEnergy - BackEnergy;
       // Test if front and back energies are approximately equal
-      if (true || std::abs(diff) < 3*sigma)
+      if (std::abs(diff) < 3*sigma)
       {
         //They are -> it's a good event
         result = true;
