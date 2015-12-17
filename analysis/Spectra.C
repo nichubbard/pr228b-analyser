@@ -36,6 +36,25 @@ void X1pos(TCut cut = "")
     DATA->Draw("X1pos>>h_X1(1600,0,800)", basecut && cut);
 }
 
+void SiHitPattern(TCut cut = "")
+{
+    DATA->Draw("ADCChannelBack:ADCChannelFront>>h_SiHit(224,0,224,224,0,224)", basecut && cut, "col");
+}
+
+void SiFrontBack_PD(TCut cut = "")
+{
+    TCanvas* cSiFB = new TCanvas("cSiFB");
+    cSiFB->Divide(2, 2);
+    cSiFB->cd(1);
+    DATA->Draw("EnergyBack:EnergyFront>>h_SiFB5(1000,0,10000,1000,0,10000)", basecut && cut && "DetectorHit == 5", "col");
+    cSiFB->cd(2);
+    DATA->Draw("EnergyBack:EnergyFront>>h_SiFB6(1000,0,10000,1000,0,10000)", basecut && cut && "DetectorHit == 6", "col");
+    cSiFB->cd(3);
+    DATA->Draw("EnergyBack:EnergyFront>>h_SiFB7(1000,0,10000,1000,0,10000)", basecut && cut && "DetectorHit == 7", "col");
+    cSiFB->cd(4);
+    DATA->Draw("EnergyBack:EnergyFront>>h_SiFB8(1000,0,10000,1000,0,10000)", basecut && cut && "DetectorHit == 8", "col");
+}
+
 void CheckLUT()
 {
     TCanvas* cLUT = new TCanvas("cLUT");
