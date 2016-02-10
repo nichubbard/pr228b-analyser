@@ -18,7 +18,8 @@ void ExSi(TCut cut = "", TString name = "ExSi")
 
 void SiliconTime(TCut cut = "")
 {
-    DATA->Draw("SiliconTime-toftdc7>>h_SiliconTime(1000,-9000,9000)", basecut && cut);
+    //DATA->Draw("SiliconTime-toftdc7>>h_SiliconTime(1000,-9000,9000)", basecut && cut);
+    DATA->Draw("SiliconTime-toftdc7>>h_SiliconTime(100,-900,900)", basecut && cut);
 }
 
 void PID()
