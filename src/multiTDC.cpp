@@ -39,7 +39,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 	{
 		int channel = TDC_channel_import[n];
 		float value = TDC_value_import[n];
-		if (channel > 943 && channel < TDCsize)
+		if (channel >= 832 && channel < TDCsize)
 		{
 			if (ChannelCounter[channel] == 0)
 			{
