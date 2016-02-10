@@ -218,6 +218,8 @@ Bool_t Carbon::Process(Long64_t entry)
     b_SiliconInfo_SiliconEnergy->GetEntry(entry);
     b_SiliconInfo_DetectorHit->GetEntry(entry);
     b_SiliconInfo_EnergyBack->GetEntry(entry);
+    b_SiliconInfo_ADCChannelFront->GetEntry(entry);
+    b_SiliconInfo_ADCChannelBack->GetEntry(entry);
     b_t_Ex->GetEntry(entry);
     b_t_X1pos->GetEntry(entry);
     b_SiliconInfo_SiliconTime->GetEntry(entry);
@@ -236,6 +238,8 @@ Bool_t Carbon::Process(Long64_t entry)
 
     std::vector<int> filteredDhit;
     std::vector<double> filteredE;
+    std::vector<int> filteredStripF;
+    std::vector<int> filteredStripB;
 
     stats_spec_total++;
     if (X1chisq < 0 || X1chisq >= 0.2) {
@@ -305,12 +309,44 @@ Bool_t Carbon::Process(Long64_t entry)
             stats_si_energy_rejected++;
             continue;
         }
+        if (DetectorHit[i] == 5)
+            continue;
+        if (ADCChannelFront[i] == 128 || ADCChannelFront[i] == 143
+                || ADCChannelFront[i] == 160 || ADCChannelFront[i] == 175
+                || ADCChannelFront[i] == 192 || ADCChannelFront[i] == 207)
+        {
+            continue;
+        }
         int time = SiliconTime[i] - tof;
         silicontime->Fill(time);
+        for (size_t i = 0; i < filteredStripF.size(); i++)
+        {
+            int lastADCFront = filteredStripF[i];
+            if (lastADCFront == ADCChannelFront[i] - 1 ||
+                    lastADCFront == ADCChannelFront[i] + 1 ||
+                    lastADCFront == ADCChannelFront[i])
+            {
+                stats_si_energy_rejected++;
+                continue;
+            }
+        }
+        for (size_t i = 0; i < filteredStripB.size(); i++)
+        {
+            int lastADCBack = filteredStripB[i];
+            if (lastADCBack == ADCChannelBack[i] - 1 ||
+                    lastADCBack == ADCChannelBack[i] + 1 ||
+                    lastADCBack == ADCChannelBack[i])
+            {
+                stats_si_energy_rejected++;
+                continue;
+            }
+        }
         if(!tdc_gate || (time >= tdc_gate_left && time <= tdc_gate_right))
         {
             filteredDhit.push_back(DetectorHit[i]);
             filteredE.push_back(SiliconEnergy[i]);
+            filteredStripF.push_back(ADCChannelFront[i]);
+            filteredStripB.push_back(ADCChannelBack[i]);
             stats_si_accepted++;
         }
         else
@@ -349,7 +385,7 @@ Bool_t Carbon::Process(Long64_t entry)
     mpcty->Fill(Ex, filteredDhit.size());
     //mpcty->Fill(Ex, dets);
 
-    if (filteredE.size() >= 2 && filteredE.size() < 20)
+    if (filteredE.size() >= 2 && filteredE.size() < 10)
     {
         for (size_t i = 0; i < filteredE.size(); ++i)
         {
